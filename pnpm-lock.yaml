@@ -63,6 +63,9 @@ importers:
         specifier: ^5.1.0
         version: 5.1.0(@types/react@19.3.0)(react@19.3.1)(use-sync-external-store@1.7.0(react@19.3.1))
     devDependencies:
+      '@sanity/client':
+        specifier: ^8.16.0
+        version: 8.16.0
       '@tailwindcss/turbopack':
         specifier: 4.3.3
         version: 4.3.3

@@ -4,8 +4,10 @@ import path from "node:path";
 import { getImageProps } from "next/image";
 
 import { SiteHeader } from "@/components/layout/site-header";
+import { GENERAL_ENQUIRY_MESSAGE, whatsappUrl } from "@/lib/whatsapp";
 import { sanityFetch } from "@/sanity/lib/fetch";
 import { urlFor } from "@/sanity/lib/image";
+import { getSiteSettings } from "@/sanity/lib/site-settings";
 import { HERO_PRODUCTS_QUERY } from "@/sanity/queries";
 
 import {
@@ -100,13 +102,15 @@ function HeroBackground() {
 
 /** Home page hero. Fetches featured products on the server; interaction lives in HeroShowcase. */
 export async function Hero() {
-  const products = await getHeroProducts();
+  const [products, settings] = await Promise.all([getHeroProducts(), getSiteSettings()]);
+  const contactHref = whatsappUrl(GENERAL_ENQUIRY_MESSAGE, settings.whatsappNumber) ?? "/contact";
 
   return (
     <HeroShowcase
       products={products}
       header={<SiteHeader variant="overlay" />}
       background={<HeroBackground />}
+      contactHref={contactHref}
     />
   );
 }

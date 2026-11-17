@@ -10,6 +10,12 @@ import { structureTool } from "sanity/structure";
 
 import { apiVersion, dataset, projectId } from "./src/sanity/env";
 import { schemaTypes } from "./src/sanity/schemas";
+import { structure } from "./src/sanity/structure";
+
+/** Singleton types: one fixed document, opened from the sidebar. */
+const SINGLETON_TYPES = new Set(["siteSettings"]);
+/** Actions allowed on singletons (no duplicate, delete or unpublish). */
+const SINGLETON_ACTIONS = new Set(["publish", "discardChanges", "restore"]);
 
 export default defineConfig({
   name: "default",
@@ -20,9 +26,17 @@ export default defineConfig({
   dataset,
   schema: {
     types: schemaTypes,
+    // Hide singletons from "Create new".
+    templates: (templates) => templates.filter(({ schemaType }) => !SINGLETON_TYPES.has(schemaType)),
+  },
+  document: {
+    actions: (actions, { schemaType }) =>
+      SINGLETON_TYPES.has(schemaType)
+        ? actions.filter(({ action }) => action && SINGLETON_ACTIONS.has(action))
+        : actions,
   },
   plugins: [
-    structureTool(),
+    structureTool({ structure }),
     // GROQ playground inside the Studio
     visionTool({ defaultApiVersion: apiVersion }),
   ],

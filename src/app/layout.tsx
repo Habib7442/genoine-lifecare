@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
 import { DM_Sans, Sora } from "next/font/google";
+
+import { defaultMetadata } from "@/lib/seo";
+
 import "./globals.css";
 
 const sora = Sora({
@@ -14,14 +17,13 @@ const dmSans = DM_Sans({
   display: "swap",
 });
 
-export const metadata: Metadata = {
-  title: {
-    default: "Genoine Lifecare Private Limited",
-    template: "%s | Genoine Lifecare",
-  },
-  description:
-    "Genoine Lifecare Private Limited — pharmaceutical marketing company in Assam, India.",
-};
+/**
+ * Site-wide defaults (metadataBase, title template, description, verification…).
+ * Lives in the root layout so it applies to every route, including /studio.
+ * Note: a title template only applies to *child* segments, which is why it is here
+ * and not in (site)/layout.tsx (whose page.tsx would be the same segment).
+ */
+export const metadata: Metadata = defaultMetadata;
 
 /**
  * Root layout: only <html>/<body>, fonts and global CSS.

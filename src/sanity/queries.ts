@@ -1,5 +1,23 @@
 import { defineQuery } from "next-sanity";
 
+/** Site-wide settings (singleton). Contact details, WhatsApp number, social links for SEO. */
+export const SITE_SETTINGS_QUERY = defineQuery(`
+  *[_type == "siteSettings" && _id == "siteSettings"][0]{
+    phone,
+    email,
+    whatsappNumber,
+    "socialLinks": socialLinks[].url
+  }
+`);
+
+/** Product slugs + last update, for sitemap.xml. */
+export const PRODUCT_SITEMAP_QUERY = defineQuery(`
+  *[_type == "product" && defined(slug.current)]{
+    "slug": slug.current,
+    _updatedAt
+  }
+`);
+
 /** Therapeutic areas for the home page "Browse by speciality" section, with product counts. */
 export const THERAPEUTIC_AREAS_QUERY = defineQuery(`
   *[_type == "therapeuticArea" && defined(slug.current)]

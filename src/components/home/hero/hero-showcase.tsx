@@ -5,7 +5,6 @@ import { MotionConfig, motion, useReducedMotion } from "motion/react";
 import Link from "next/link";
 import { useCallback, useRef, useState, type ReactNode } from "react";
 
-import { GENERAL_ENQUIRY_MESSAGE, whatsappUrl } from "@/lib/whatsapp";
 
 import { HeroAreaCard } from "./hero-area-card";
 import { HeroBubbles } from "./hero-bubbles";
@@ -23,9 +22,11 @@ type HeroShowcaseProps = {
   header: ReactNode;
   /** Server-rendered sky background (<picture>). */
   background: ReactNode;
+  /** "Contact us" target: a wa.me link when a WhatsApp number is set, otherwise /contact. */
+  contactHref: string;
 };
 
-export function HeroShowcase({ products, header, background }: HeroShowcaseProps) {
+export function HeroShowcase({ products, header, background, contactHref }: HeroShowcaseProps) {
   const reduceMotion = useReducedMotion() ?? false;
   const [activeIndex, setActiveIndex] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
@@ -37,10 +38,7 @@ export function HeroShowcase({ products, header, background }: HeroShowcaseProps
   const product = products[activeIndex];
   const meta = [product.dosageForm, product.packSize].filter(Boolean).join(" · ");
 
-  // "Contact us" opens WhatsApp when a number is configured, otherwise the contact page.
-  const whatsapp = whatsappUrl(GENERAL_ENQUIRY_MESSAGE);
-  const contactHref = whatsapp ?? "/contact";
-  const contactIsWhatsApp = whatsapp !== null;
+  const contactIsWhatsApp = contactHref.startsWith("https://wa.me/");
 
   const select = useCallback((index: number) => {
     setActiveIndex(index);

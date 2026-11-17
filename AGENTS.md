@@ -212,6 +212,7 @@ Build to these unless the user changes them.
 - **Sanity reads go through `sanityFetch`** (`src/sanity/lib/fetch.ts`). It caches successful results by tag, returns the fallback (without caching it) on errors, and returns the fallback when Sanity isn't configured, so the site renders before `.env.local` exists.
 - **The header is `SiteHeader`** (`src/components/layout/`). The home page renders `variant="overlay"` inside its hero; other pages use `variant="solid"`. The `(site)` layout does not render a header. The full nav shows from `lg`; below that, a menu button opens a `Sheet`.
 - **Content freshness comes from a webhook, not polling.** Sanity webhook → `POST /api/revalidate` → `revalidateTag`. Queries are cached with `"use cache"` + `cacheTag` (e.g. `product`, `category`, `therapeuticArea`, `siteSettings`).
+- **SEO lives in `src/lib/seo.ts`** (`siteConfig`, `buildMetadata`, `pageMetadata`, `productMetadata`, `therapeuticAreaMetadata`, JSON-LD generators) and `src/components/seo/JsonLd.tsx`. New pages export `metadata = pageMetadata.<page>` or call `buildMetadata`; never hand-write meta tags. Product JSON-LD must never include `offers`, prices, ratings or reviews. `/products?area=` pages canonicalise to `/products`. `robots.ts` blocks all indexing when `NEXT_PUBLIC_SITE_URL` is `localhost` or `*.vercel.app`.
 - **`siteSettings` is a singleton** in Studio: one document, shown as a single item in the Studio structure, not a list.
 - **Header uses a text logo** ("Genoine Lifecare") until the real logo exists.
 - **The palette is provisional** and will change after the logo is designed. That is why every colour goes through tokens.
@@ -255,7 +256,11 @@ Dataset: `production`, public read. Every field description in Studio should be 
 
 ### `siteSettings` (singleton)
 
-Company name, tagline, phone, WhatsApp number, email, address, CIN, social links, business hours, Google Maps embed URL, medical disclaimer text.
+Fixed `_id: "siteSettings"`, opened from the Studio sidebar (`src/sanity/structure.ts`); can't be created, duplicated or deleted. Fields: `companyName`, `tagline`, `phone`, `whatsappNumber` (digits only), `email`, `address`, `businessHours`, `mapEmbedUrl`, `socialLinks[] { platform, url }`, `cin`, `disclaimer`. Read it on the server with `getSiteSettings()` (`src/sanity/lib/site-settings.ts`); it falls back to `NEXT_PUBLIC_WHATSAPP_NUMBER` for WhatsApp.
+
+### Seed data
+
+`pnpm seed` (`scripts/seed.mjs`) creates clearly-fake sample content with fixed `_id`s: Site settings (no contact details), 8 therapeutic areas with icons, 4 categories, "Sample Product A–D" with hero images. It never overwrites existing documents; `pnpm seed --force` resets them.
 
 **Rules:**
 
@@ -322,7 +327,8 @@ The canonical list is `.env.example`. Keep this table and `.env.example` in sync
 | `NEXT_PUBLIC_SANITY_DATASET` | `production` | client + server |
 | `NEXT_PUBLIC_SANITY_API_VERSION` | `2024-10-01` | client + server |
 | `SANITY_API_READ_TOKEN` | Server-side reads (drafts/preview later) | server only |
-| `SANITY_REVALIDATE_SECRET` | Webhook signature secret (add when building `/api/revalidate`) | server only |
+| `SANITY_API_WRITE_TOKEN` | Editor token for `pnpm seed` only. Never import it in app code | server only (scripts) |
+| `SANITY_REVALIDATE_SECRET` | Webhook signature secret for `/api/revalidate` | server only |
 | `NEXT_PUBLIC_WHATSAPP_NUMBER` | Fallback WhatsApp number | client + server |
 | `NEXT_PUBLIC_SITE_URL` | Absolute URLs for metadata, sitemap, OG | client + server |
 
@@ -380,7 +386,7 @@ Never claim a check passed without running it. If a check fails, say so and show
 Follow the PRD phases. Each step gets its own prompt file and approval.
 
 1. **Setup** ✅ — Next.js, Tailwind, shadcn, Sanity Studio, Zustand, theme tokens, fonts, folder structure
-2. **CMS** — schemas, queries, seed script with placeholder products, revalidation webhook
+2. **CMS** ✅ — schemas, queries, seed script with placeholder products, revalidation webhook
 3. **Catalogue** — product card, `/products` listing with filters and search, product detail
 4. **Enquiry** — Zustand store, floating button, sheet, WhatsApp message builder
 5. **Pages** — Home, About, Distributor, Contact, header, footer

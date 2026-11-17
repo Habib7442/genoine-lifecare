@@ -3,7 +3,7 @@
  * Returns null when no WhatsApp number is configured, so callers can fall back
  * (e.g. to /contact). Numbers are digits only with country code, e.g. 919876543210.
  *
- * TODO (Phase 2): prefer the number from Sanity `siteSettings`, falling back to the env var.
+ * Pass the number from `getSiteSettings()` (Sanity siteSettings, with env fallback) on the server.
  */
 export function whatsappUrl(
   message: string,

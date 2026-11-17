@@ -3,13 +3,21 @@
  * This route sits outside the (site) route group, so it does not get the
  * site header/footer — only the bare root layout.
  */
-import { NextStudio } from "next-sanity/studio";
+import type { Metadata } from "next";
+import { NextStudio, metadata as studioMetadata } from "next-sanity/studio";
 
 import { isSanityConfigured } from "@/sanity/env";
 
 import config from "../../../../sanity.config";
 
-export { metadata, viewport } from "next-sanity/studio";
+export { viewport } from "next-sanity/studio";
+
+/** Never index the Studio (also disallowed in robots.txt). */
+export const metadata: Metadata = {
+  ...studioMetadata,
+  title: "Studio",
+  robots: { index: false, follow: false, googleBot: { index: false, follow: false } },
+};
 
 export default function StudioPage() {
   if (!isSanityConfigured) return <StudioNotConfigured />;
