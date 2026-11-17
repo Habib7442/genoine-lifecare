@@ -1,5 +1,20 @@
 import { defineQuery } from "next-sanity";
 
+/** Therapeutic areas for the home page "Browse by speciality" section, with product counts. */
+export const THERAPEUTIC_AREAS_QUERY = defineQuery(`
+  *[_type == "therapeuticArea" && defined(slug.current)]
+  | order(coalesce(order, 999) asc, title asc){
+    _id,
+    title,
+    "slug": slug.current,
+    description,
+    shortDescription,
+    tint,
+    "icon": icon{ asset },
+    "productCount": count(*[_type == "product" && references(^._id)])
+  }
+`);
+
 /** Up to 4 featured products for the home page hero. */
 export const HERO_PRODUCTS_QUERY = defineQuery(`
   *[_type == "product" && isFeatured == true && defined(slug.current)]

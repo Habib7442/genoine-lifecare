@@ -21,6 +21,12 @@
   --brand-white: #ffffff;
   --brand-border: #e5e5e5; /* light neutral grey */
 
+  /* Soft tile tints (home specialities). Rotate through these when a tile has no tint. */
+  --tint-blush: var(--brand-tint);
+  --tint-yellow: #fff6d6;
+  --tint-lilac: #f3eef8;
+  --tint-mint: #eef7f3;
+
   /* Home hero scene (sky photo). Not brand colours: tied to the hero image. */
   --hero-sky: #6db8f2; /* shown while the sky image loads */
   --hero-shadow: #1e3a5f; /* product shadow on the clouds */
@@ -131,6 +137,17 @@
   --animate-hero-drift: hero-drift 30s ease-in-out infinite alternate;
   --animate-hero-bubble: hero-bubble 9s ease-in-out infinite;
   --animate-hero-progress: hero-progress 6s linear forwards;
+  --animate-icon-bob: icon-bob 4s ease-in-out infinite;
+
+  @keyframes icon-bob {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-2px);
+    }
+  }
 
   @keyframes hero-drift {
     from {
@@ -182,5 +199,52 @@
   button:not(:disabled),
   [role="button"]:not(:disabled) {
     cursor: pointer;
+  }
+}
+
+/* ==========================================================================
+   Scrollbar: slim magenta thumb on the pink tint track.
+   Applies to the page (html) and to inner areas that opt in with `.scrollbar-brand`.
+   Deliberately not global (`*`): Sanity Studio keeps its native scrollbars.
+   Phones use overlay scrollbars, so this only shows on desktop.
+   ========================================================================== */
+:root {
+  --scrollbar-track: var(--brand-tint);
+  --scrollbar-thumb: color-mix(in oklab, var(--brand-primary) 55%, transparent);
+  --scrollbar-thumb-hover: var(--brand-primary-light);
+}
+
+/* Chrome, Edge, Safari: full styling (rounded, inset, hover). */
+html::-webkit-scrollbar,
+.scrollbar-brand::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+html::-webkit-scrollbar-track,
+.scrollbar-brand::-webkit-scrollbar-track {
+  background: var(--scrollbar-track);
+}
+html::-webkit-scrollbar-thumb,
+.scrollbar-brand::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border: 2px solid var(--scrollbar-track);
+  border-radius: 9999px;
+}
+html::-webkit-scrollbar-thumb:hover,
+.scrollbar-brand::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover);
+}
+html::-webkit-scrollbar-button,
+.scrollbar-brand::-webkit-scrollbar-button {
+  display: none;
+}
+
+/* Firefox (no ::-webkit-scrollbar): standard properties. Kept out of Chromium,
+   where setting them would switch off the richer styling above. */
+@supports not selector(::-webkit-scrollbar) {
+  html,
+  .scrollbar-brand {
+    scrollbar-width: thin;
+    scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
   }
 }

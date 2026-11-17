@@ -115,6 +115,7 @@ All colours live as `--brand-*` CSS variables at the top of `src/app/globals.css
 - Never put white text on yellow. No gradients, no neon, no cream, off-white or gold tones. No large magenta and yellow blocks side by side.
 - **Exception, home hero only:** the sky scene uses `hero-sky` / `hero-shadow` tokens (in `globals.css`, not brand colours), a subtle top-left radial shade, and CSS glass bubbles, as approved by the user. Hero glass panels use the shared `glass` class in `src/components/home/hero/glass.ts` (navy-tinted so white text stays readable over the clouds). Don't reuse these outside the hero.
 - Light mode only.
+- **Scrollbar:** the page scrollbar is styled in `globals.css` (magenta thumb on the tint track). For an inner scroll area (e.g. the enquiry sheet), add the `scrollbar-brand` class. Don't style scrollbars globally (`*`): Sanity Studio keeps its native ones.
 
 ---
 
