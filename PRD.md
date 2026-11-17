@@ -16,7 +16,7 @@ This is **not an e-commerce site**. There is no checkout, no online payment and 
 ## 2. Goals
 
 1. **Showcase every product clearly**: composition, strength, dosage form, pack size and indications on a clean, fast product page.
-2. **Generate enquiries**: make it easy to enquire about one product or many products at once through WhatsApp.
+2. **Generate enquiries**: make it easy to enquire about any product directly on WhatsApp, in one tap.
 3. **Build trust for a new company**: a professional look, company details (CIN, address) and a consistent brand.
 4. **Let the client manage products themselves**: add, edit and remove products through a CMS without a developer.
 5. **Recruit distributors**: give distributors and franchise partners a clear way to get in touch.
@@ -31,7 +31,7 @@ This is **not an e-commerce site**. There is no checkout, no online payment and 
 
 | User | What they need |
 |---|---|
-| **Distributors / stockists** | Browse the full range, shortlist many products, send one enquiry |
+| **Distributors / stockists** | Browse the full range and enquire about products on WhatsApp |
 | **Chemists / retailers** | Find a specific product and check its composition and pack size |
 | **Doctors** | Check composition, strength and indications quickly on a phone |
 | **Prospective franchise (PCD) partners** | Understand the company and the range, and apply to partner |
@@ -45,7 +45,7 @@ Most visitors will be on **mobile phones**, so the design is mobile-first.
 - Home page
 - Products listing with filters and search
 - Product detail pages
-- Enquiry list (shortlist multiple products → one WhatsApp message)
+- Direct WhatsApp enquiry per product (no enquiry list or cart)
 - About, Contact and Distributor enquiry pages
 - Sanity CMS for managing all content
 - Basic SEO (metadata, sitemap, structured data)
@@ -65,7 +65,6 @@ Most visitors will be on **mobile phones**, so the design is mobile-first.
 | Framework | Next.js (App Router, TypeScript) |
 | Styling | Tailwind CSS + shadcn/ui |
 | CMS | Sanity v3, Studio embedded at `/studio` |
-| Client state | Zustand (enquiry list, persisted to localStorage) |
 | Icons | lucide-react |
 | Images | next/image + the Sanity image CDN |
 | Hosting | Vercel |
@@ -132,8 +131,8 @@ Professional, clear and trustworthy. Copy is simple and avoids heavy marketing l
 - Product name, composition and strength
 - Dosage form, pack size, and category and therapeutic area badges
 - Indications list and a usage note
-- **"Add to enquiry list"** button
-- **"Enquire on WhatsApp"** button (prefilled with the product name and composition)
+- **"Enquire on WhatsApp"** button (prefilled with the product name, form, pack, composition and page link)
+- **"Share product"** button (native share sheet, or copy link)
 - Related products from the same therapeutic area
 - SEO metadata and Product structured data
 
@@ -141,7 +140,7 @@ Professional, clear and trustworthy. Copy is simple and avoids heavy marketing l
 - Product image on a white background
 - Name, and composition in smaller muted text
 - Dosage form badge
-- A quick "Add to enquiry" icon button
+- An "Enquire on WhatsApp" button (opens WhatsApp with that product prefilled)
 
 ### 8.5 About
 - Company introduction, mission, and approach to quality
@@ -162,28 +161,32 @@ Professional, clear and trustworthy. Copy is simple and avoids heavy marketing l
 - Navigation: Home, Products, About, Distributor, Contact
 - A mobile menu
 - Footer with company details, CIN, quick links and social links
-- A floating enquiry list button showing how many products are selected
+- A floating WhatsApp button (general enquiry)
 
-## 9. Enquiry list (key feature)
+## 9. Direct WhatsApp enquiry per product
 
-Distributors usually ask about many products at once, so visitors can build a shortlist before contacting the company.
+There is no enquiry list or cart. Every enquiry goes straight to WhatsApp in one tap.
 
 **Requirements**
-- Add or remove products from any product card or product page
-- The list persists in localStorage (Zustand `persist`) and survives page reloads
-- A floating button shows the count of selected products
-- A slide-in sheet lists the selected products, each with an optional quantity or note field
-- **"Send enquiry on WhatsApp"** builds one `wa.me` message listing every product (name, composition, pack size, note)
-- A "Clear list" action
-- No hydration mismatch: the count renders only after the client has loaded
+- Every product card and product page has an **"Enquire on WhatsApp"** button that opens WhatsApp with that product prefilled.
+- The header **"Enquire now"**, the hero **"Contact us"** and a **floating WhatsApp button** (bottom-right on every page) open WhatsApp with a general enquiry message.
+- The product page also has a **"Share product"** button (native share sheet on phones, otherwise copy link).
+- All WhatsApp links open in a new tab. The number comes from `NEXT_PUBLIC_WHATSAPP_NUMBER`; without it, buttons fall back to the Contact page.
+- One shared helper builds every link and message (`src/lib/whatsapp.ts`).
 
-**Example WhatsApp message**
+**Product enquiry message**
 ```
 Hello Genoine Lifecare, I'd like to enquire about:
-1. Pantozen-DSR — Pantoprazole 40mg + Domperidone 30mg (10x10) — Qty: 20 boxes
-2. Glimzen-M2 — Glimepiride 2mg + Metformin 500mg (10x15)
+*Biostone* (Syrup, 200 mL)
+Composition: Potassium Citrate 1100 mg + Magnesium Citrate 375 mg + Pyridoxine-5 Phosphate 1.9 mg
+Link: https://<site>/products/biostone
 Name:
 City:
+```
+
+**General enquiry message**
+```
+Hello Genoine Lifecare, I'd like to know more about your products.
 ```
 
 ## 10. CMS (Sanity) content model
@@ -255,12 +258,11 @@ src/
     ui/                → shadcn
     layout/            → header, footer, mobile nav
     product/           → card, grid, filters, gallery
-    enquiry/           → floating button, sheet, WhatsApp builder
+    layout/whatsapp-float → floating WhatsApp button
   sanity/
     lib/               → client, image builder
     schemas/
     queries.ts
-  store/               → Zustand enquiry store
   lib/
 ```
 
@@ -268,10 +270,10 @@ src/
 
 | Phase | Work |
 |---|---|
-| **1. Setup** | Next.js, Tailwind, shadcn, Sanity Studio, Zustand, theme tokens, fonts, folder structure |
+| **1. Setup** | Next.js, Tailwind, shadcn, Sanity Studio, theme tokens, fonts, folder structure |
 | **2. CMS** | Schemas, queries, seed script with placeholder products, revalidation webhook |
 | **3. Catalogue** | Product card, products listing with filters and search, product detail page |
-| **4. Enquiry** | Zustand enquiry list, floating button, sheet, WhatsApp message builder |
+| **4. Enquiry** | Direct WhatsApp enquiry per product, floating WhatsApp button, share button (done; replaces the enquiry list) |
 | **5. Pages** | Home, About, Distributor, Contact, header, footer |
 | **6. Content** | Import the real product list and cleaned pack photos |
 | **7. SEO and launch** | Metadata, sitemap, structured data, analytics, domain, Search Console |

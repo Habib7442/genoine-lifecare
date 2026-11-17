@@ -21,6 +21,10 @@
   --brand-white: #ffffff;
   --brand-border: #e5e5e5; /* light neutral grey */
 
+  /* WhatsApp buttons. Darker than the logo green (#25D366) so white text stays readable. */
+  --whatsapp: #128c7e;
+  --whatsapp-hover: #0e7166;
+
   /* Soft tile tints (home specialities). Rotate through these when a tile has no tint. */
   --tint-blush: var(--brand-tint);
   --tint-yellow: #fff6d6;
@@ -87,6 +91,8 @@
   --color-brand-tint: var(--brand-tint);
   --color-brand-ink: var(--brand-ink);
   --color-brand-ink-muted: var(--brand-ink-muted);
+  --color-whatsapp: var(--whatsapp);
+  --color-whatsapp-hover: var(--whatsapp-hover);
   --color-hero-sky: var(--hero-sky);
   --color-hero-shadow: var(--hero-shadow);
 
@@ -199,6 +205,18 @@
   button:not(:disabled),
   [role="button"]:not(:disabled) {
     cursor: pointer;
+  }
+}
+
+/* Product pages have their own WhatsApp buttons (inline + mobile sticky bar): no floating bubble there. */
+body:has([data-product-page]) [data-whatsapp-float] {
+  display: none;
+}
+
+/* Mobile sticky WhatsApp bar is showing (set by ProductEnquiryCta): keep the footer clear of it. */
+@media (width < 48rem) {
+  body[data-sticky-bar="on"] {
+    padding-bottom: calc(4.75rem + env(safe-area-inset-bottom));
   }
 }
 

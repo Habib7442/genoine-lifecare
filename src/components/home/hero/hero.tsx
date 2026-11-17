@@ -4,72 +4,10 @@ import path from "node:path";
 import { getImageProps } from "next/image";
 
 import { SiteHeader } from "@/components/layout/site-header";
-import { GENERAL_ENQUIRY_MESSAGE, whatsappUrl } from "@/lib/whatsapp";
-import { sanityFetch } from "@/sanity/lib/fetch";
-import { urlFor } from "@/sanity/lib/image";
-import { getSiteSettings } from "@/sanity/lib/site-settings";
-import { HERO_PRODUCTS_QUERY } from "@/sanity/queries";
+import { generalEnquiryMessage, getWhatsAppLink } from "@/lib/whatsapp";
 
-import {
-  FALLBACK_HERO_PRODUCTS,
-  HERO_BACKGROUND,
-  defaultAreaDescription,
-  fallbackBottle,
-} from "./hero-content";
+import { HERO_BACKGROUND, HERO_SHOWCASE_PRODUCTS } from "./hero-content";
 import { HeroShowcase } from "./hero-showcase";
-import type { HeroProduct } from "./types";
-
-type SanityImage = {
-  asset?: { _ref: string };
-  alt?: string;
-  hotspot?: unknown;
-  crop?: unknown;
-} | null;
-
-type HeroProductResult = {
-  _id: string;
-  name: string;
-  slug: string;
-  composition: string;
-  dosageForm?: string | null;
-  packSize?: string | null;
-  keyUse?: string | null;
-  therapeuticArea?: string | null;
-  therapeuticAreaDescription?: string | null;
-  heroImage?: SanityImage;
-};
-
-function toHeroProduct(result: HeroProductResult, index: number): HeroProduct {
-  const area = result.therapeuticArea ?? undefined;
-  return {
-    id: result._id,
-    slug: result.slug,
-    name: result.name,
-    composition: result.composition,
-    dosageForm: result.dosageForm ?? undefined,
-    packSize: result.packSize ?? undefined,
-    keyUse: result.keyUse ?? undefined,
-    therapeuticArea: area,
-    therapeuticAreaDescription:
-      result.therapeuticAreaDescription || (area ? defaultAreaDescription(area) : undefined),
-    // Until a product has a heroImage, use the static bottle for its position.
-    image: result.heroImage?.asset
-      ? {
-          src: urlFor(result.heroImage).width(1000).auto("format").url(),
-          alt: result.heroImage.alt ?? result.name,
-        }
-      : { src: fallbackBottle(index), alt: `${result.name} bottle` },
-  };
-}
-
-async function getHeroProducts(): Promise<HeroProduct[]> {
-  const results = await sanityFetch<HeroProductResult[]>({
-    query: HERO_PRODUCTS_QUERY,
-    tags: ["product", "therapeuticArea"],
-    fallback: [],
-  });
-  return results.length > 0 ? results.map(toHeroProduct) : FALLBACK_HERO_PRODUCTS;
-}
 
 const hasMobileBackground = existsSync(
   path.join(process.cwd(), "public", HERO_BACKGROUND.mobile),
@@ -100,10 +38,14 @@ function HeroBackground() {
   );
 }
 
-/** Home page hero. Fetches featured products on the server; interaction lives in HeroShowcase. */
-export async function Hero() {
-  const [products, settings] = await Promise.all([getHeroProducts(), getSiteSettings()]);
-  const contactHref = whatsappUrl(GENERAL_ENQUIRY_MESSAGE, settings.whatsappNumber) ?? "/contact";
+/**
+ * Home page hero. A design showcase: it always shows the static designed bottles
+ * (HERO_SHOWCASE_PRODUCTS), never catalogue products from Sanity. Real products
+ * live on /products. "Contact us" opens a WhatsApp general enquiry.
+ */
+export function Hero() {
+  const products = HERO_SHOWCASE_PRODUCTS;
+  const contactHref = getWhatsAppLink(generalEnquiryMessage()) ?? "/contact";
 
   return (
     <HeroShowcase

@@ -14,7 +14,7 @@ export const HERO_BACKGROUND = {
 
 export const HERO_PRODUCTS_LINK = { label: "View all products", href: "/products" };
 
-/** Static product cut-outs (3:4, transparent), used until a product has a `heroImage` in Sanity. */
+/** Static product cut-outs (3:4, transparent) for the hero design. */
 export const HERO_BOTTLES = [
   "/hero/gastro-care-bottle.webp",
   "/hero/womens-care-bottle.webp",
@@ -26,16 +26,11 @@ export function fallbackBottle(index: number): string {
   return HERO_BOTTLES[index % HERO_BOTTLES.length];
 }
 
-/** Side-card line when a therapeutic area has no description in Sanity. */
-export function defaultAreaDescription(area: string): string {
-  return `Explore our ${area.toLowerCase()} range.`;
-}
-
 /**
- * Shown when Sanity has no featured products (or is not configured yet).
- * Deliberately generic "Sample" names: never present placeholders as real products.
+ * The hero's design showcase (always shown; the hero does not read products from Sanity).
+ * Deliberately generic "Sample" names: never present these as real catalogue products.
  */
-export const FALLBACK_HERO_PRODUCTS: HeroProduct[] = [
+export const HERO_SHOWCASE_PRODUCTS: HeroProduct[] = [
   // Each sample matches what is printed on its bottle image (form + pack).
   {
     id: "sample-product-a",

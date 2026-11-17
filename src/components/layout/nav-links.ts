@@ -8,8 +8,8 @@ export const NAV_LINKS: NavLink[] = [
   { href: "/contact", label: "Contact" },
 ];
 
-/** Primary header call to action. Points to the distributor page until the enquiry sheet exists (Phase 4). */
-export const HEADER_CTA: NavLink = { href: "/distributor", label: "Enquire now" };
+/** Header call to action label. Its link is a WhatsApp general enquiry (built in SiteHeader). */
+export const HEADER_CTA_LABEL = "Enquire now";
 
 export function isActiveLink(pathname: string, href: string): boolean {
   return href === "/" ? pathname === "/" : pathname.startsWith(href);

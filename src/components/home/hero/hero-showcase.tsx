@@ -1,10 +1,12 @@
 "use client";
 
-import { ArrowRight, MessageCircle } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { MotionConfig, motion, useReducedMotion } from "motion/react";
 import Link from "next/link";
 import { useCallback, useRef, useState, type ReactNode } from "react";
 
+
+import { WhatsAppIcon } from "@/components/icons/whatsapp-icon";
 
 import { HeroAreaCard } from "./hero-area-card";
 import { HeroBubbles } from "./hero-bubbles";
@@ -142,7 +144,7 @@ export function HeroShowcase({ products, header, background, contactHref }: Hero
                 {...(contactIsWhatsApp ? { target: "_blank", rel: "noopener noreferrer" } : {})}
                 className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-white px-4 text-[15px] font-medium whitespace-nowrap text-primary transition-colors outline-none text-shadow-none hover:bg-white/90 focus-visible:ring-2 focus-visible:ring-white lg:h-11 lg:w-auto lg:px-5 lg:text-sm"
               >
-                <MessageCircle className="size-4 shrink-0" aria-hidden="true" />
+                <WhatsAppIcon className="size-4 shrink-0" />
                 Contact us
               </a>
             </div>

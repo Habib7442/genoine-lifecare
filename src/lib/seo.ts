@@ -188,7 +188,8 @@ function productDescription(product: SeoProduct): string {
 /** 1200×630 share image from the product photo, padded on white so pack shots aren't cropped. */
 function productImageUrl(product: SeoProduct): string {
   if (!product.image) return siteConfig.ogImage;
-  return urlFor(product.image).width(1200).height(630).fit("fill").bg("ffffff").auto("format").url();
+  // ignoreImageParams(): otherwise the builder adds a crop rect and cuts the pack in half.
+  return urlFor(product.image).ignoreImageParams().width(1200).height(630).fit("fill").bg("ffffff").auto("format").url();
 }
 
 export function productMetadata(product: SeoProduct): Metadata {

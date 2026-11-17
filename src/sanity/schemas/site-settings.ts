@@ -37,16 +37,6 @@ export const siteSettings = defineType({
       description: "As it should be shown, e.g. +91 98765 43210.",
     }),
     defineField({
-      name: "whatsappNumber",
-      title: "WhatsApp number",
-      type: "string",
-      group: "contact",
-      description:
-        "Digits only, with country code, no spaces or +. Example: 919876543210. All WhatsApp buttons on the site use this number.",
-      validation: (rule) =>
-        rule.regex(/^\d{10,15}$/, { name: "digits only" }).error("Use digits only, with country code (e.g. 919876543210)."),
-    }),
-    defineField({
       name: "email",
       title: "Email",
       type: "string",

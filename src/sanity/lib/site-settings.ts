@@ -6,8 +6,8 @@ import { SITE_SETTINGS_QUERY } from "@/sanity/queries";
 export type SiteSettings = {
   phone?: string;
   email?: string;
-  /** Digits only with country code; falls back to NEXT_PUBLIC_WHATSAPP_NUMBER. */
-  whatsappNumber?: string;
+  /** Medical disclaimer for the footer and product pages. */
+  disclaimer?: string;
   /** Social profile URLs (Organization `sameAs`). */
   socialLinks: string[];
 };
@@ -15,7 +15,7 @@ export type SiteSettings = {
 type SiteSettingsResult = {
   phone?: string | null;
   email?: string | null;
-  whatsappNumber?: string | null;
+  disclaimer?: string | null;
   socialLinks?: (string | null)[] | null;
 } | null;
 
@@ -29,7 +29,7 @@ export async function getSiteSettings(): Promise<SiteSettings> {
   return {
     phone: result?.phone || undefined,
     email: result?.email || undefined,
-    whatsappNumber: result?.whatsappNumber || process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || undefined,
+    disclaimer: result?.disclaimer || undefined,
     socialLinks: (result?.socialLinks ?? []).filter((url): url is string => Boolean(url)),
   };
 }

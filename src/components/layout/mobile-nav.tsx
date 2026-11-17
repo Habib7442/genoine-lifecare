@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowRight, Menu } from "lucide-react";
+import { Menu } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
@@ -14,16 +14,20 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { WhatsAppIcon } from "@/components/icons/whatsapp-icon";
 import { cn } from "@/lib/utils";
 
-import { HEADER_CTA, NAV_LINKS, isActiveLink } from "./nav-links";
+import { HEADER_CTA_LABEL, NAV_LINKS, isActiveLink } from "./nav-links";
 
 type MobileNavProps = {
   tone: "light" | "dark";
+  /** "Enquire now" target: a WhatsApp link (new tab), or /contact when no number is set. */
+  ctaHref: string;
   className?: string;
 };
 
-export function MobileNav({ tone, className }: MobileNavProps) {
+export function MobileNav({ tone, ctaHref, className }: MobileNavProps) {
+  const ctaIsWhatsApp = ctaHref.startsWith("https://wa.me/");
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
 
@@ -71,10 +75,14 @@ export function MobileNav({ tone, className }: MobileNavProps) {
           </ul>
         </nav>
         <div className="mt-auto p-4">
-          <Button asChild variant="accent" size="lg" className="h-11 w-full rounded-full">
-            <Link href={HEADER_CTA.href} onClick={() => setOpen(false)}>
-              {HEADER_CTA.label} <ArrowRight />
-            </Link>
+          <Button asChild size="lg" className="h-11 w-full rounded-full">
+            <a
+              href={ctaHref}
+              onClick={() => setOpen(false)}
+              {...(ctaIsWhatsApp ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+            >
+              <WhatsAppIcon className="size-4" /> {HEADER_CTA_LABEL}
+            </a>
           </Button>
         </div>
       </SheetContent>

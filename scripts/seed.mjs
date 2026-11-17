@@ -1,5 +1,7 @@
 /**
- * Seed the Sanity dataset with clearly-fake sample content (AGENTS.md §8).
+ * Seed the Sanity dataset with base content: Site settings, therapeutic areas and categories.
+ * Products are NOT seeded: real products are added in Studio (sample products were removed
+ * once real ones existed, so they must never be recreated).
  *
  *   pnpm seed           create anything that doesn't exist yet (never overwrites edits)
  *   pnpm seed --force   replace the seeded documents with these defaults
@@ -34,6 +36,7 @@ const AREAS = [
   { slug: "paediatric", title: "Paediatric", short: "Care for infants and children", desc: "Our range for children's health.", tint: "#FFF6D6" },
   { slug: "respiratory", title: "Respiratory", short: "Cough, cold and breathing", desc: "Our range for respiratory care.", tint: "#F3EEF8" },
   { slug: "nutraceuticals", title: "Nutraceuticals", short: "Vitamins and daily wellness", desc: "Our range for everyday wellness.", tint: "#EEF7F3" },
+  { slug: "urology", title: "Urology" },
 ];
 
 const CATEGORIES = [
@@ -41,26 +44,6 @@ const CATEGORIES = [
   { slug: "capsules", title: "Capsules" },
   { slug: "softgels", title: "Softgels" },
   { slug: "syrups", title: "Syrups" },
-];
-
-/** Matches the hero bottles: each sample's form and pack match what is printed on its bottle. */
-const PRODUCTS = [
-  {
-    key: "a", area: "gastro", category: "tablets", image: "public/hero/gastro-care-bottle.webp",
-    composition: "Pantoprazole 40mg + Domperidone 10mg", dosageForm: "Tablet", packSize: "30 tablets", keyUse: "Acidity and reflux",
-  },
-  {
-    key: "b", area: "gynae", category: "softgels", image: "public/hero/womens-care-bottle.webp",
-    composition: "Omega-3 + Folic Acid + Vitamin D3", dosageForm: "Softgel", packSize: "30 softgels", keyUse: "Women's nutrition",
-  },
-  {
-    key: "c", area: "paediatric", category: "syrups", image: "public/hero/kids-care-syrup.webp",
-    composition: "Paracetamol 250mg / 5ml", dosageForm: "Syrup", packSize: "100 ml", keyUse: "Fever in children",
-  },
-  {
-    key: "d", area: "nutraceuticals", category: "capsules", image: "public/hero/wellness-bottle.webp",
-    composition: "Multivitamin + Multimineral", dosageForm: "Capsule", packSize: "30 capsules", keyUse: "Daily nutrition",
-  },
 ];
 
 /* --------------------------------- helpers -------------------------------- */
@@ -75,7 +58,6 @@ async function imageField(file, alt) {
   return { _type: "image", asset: { _type: "reference", _ref: asset._id }, alt };
 }
 
-const ref = (id) => ({ _type: "reference", _ref: id });
 const slug = (current) => ({ _type: "slug", current });
 
 /* ---------------------------------- build --------------------------------- */
@@ -101,9 +83,9 @@ async function buildDocuments() {
       _type: "therapeuticArea",
       title: area.title,
       slug: slug(area.slug),
-      description: area.desc,
-      shortDescription: area.short,
-      tint: area.tint,
+      ...(area.desc ? { description: area.desc } : {}),
+      ...(area.short ? { shortDescription: area.short } : {}),
+      ...(area.tint ? { tint: area.tint } : {}),
       order: index + 1,
       icon: await imageField(`public/specialities/${area.slug}.webp`, `${area.title} illustration`),
     });
@@ -115,30 +97,6 @@ async function buildDocuments() {
       _type: "category",
       title: category.title,
       slug: slug(category.slug),
-      order: index + 1,
-    });
-  }
-
-  for (const [index, product] of PRODUCTS.entries()) {
-    const name = `Sample Product ${product.key.toUpperCase()}`;
-    console.log(`  product: ${name}`);
-    const image = await imageField(product.image, `${name} bottle`);
-    docs.push({
-      _id: `product-sample-${product.key}`,
-      _type: "product",
-      name,
-      slug: slug(`sample-product-${product.key}`),
-      composition: product.composition,
-      dosageForm: product.dosageForm,
-      packSize: product.packSize,
-      keyUse: product.keyUse,
-      category: ref(`category-${product.category}`),
-      therapeuticArea: ref(`therapeuticArea-${product.area}`),
-      shortDescription: "Sample product for layout testing. Replace with real product details.",
-      images: image ? [{ ...image, _key: "main" }] : [],
-      heroImage: image,
-      isFeatured: true,
-      isNewLaunch: index < 2,
       order: index + 1,
     });
   }

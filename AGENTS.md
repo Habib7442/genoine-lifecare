@@ -22,14 +22,14 @@ Genoine Lifecare Private Limited (CIN: U21001AS2026PTC030380) is a newly registe
 
 The full requirements are in `PRD.md`. This file holds the rules; the PRD holds the detail.
 
-**The key feature is the enquiry list.** A visitor shortlists several products and sends one WhatsApp message listing all of them. Distributors usually ask about many products at once.
+**The key feature is direct WhatsApp enquiry.** Every product has an "Enquire on WhatsApp" button that opens WhatsApp with that product prefilled. There is **no enquiry list, cart or shortlist** (user decision; do not reintroduce one).
 
 **In scope (v1):**
 
 - Home page
 - `/products` listing with filters (category, therapeutic area, dosage form) and search (name + composition)
 - `/products/[slug]` product detail
-- Enquiry list (Zustand, persisted) with a floating button, a sheet, and a WhatsApp message builder
+- Direct WhatsApp enquiry per product, a floating WhatsApp button, and a "Share product" button
 - About, Contact and Distributor enquiry pages
 - Header, footer, mobile menu
 - Sanity schemas, queries, seed script, webhook revalidation
@@ -94,7 +94,7 @@ For UI tasks, also include: layout, typography, spacing, colours (by token name)
 - Mostly white layouts, so product images are the focus. Use the pink tint for alternating sections.
 - Use shadcn/ui components from `src/components/ui/` before writing new primitives. Add new ones with `pnpm dlx shadcn@latest add <name>`.
 - Headings use Sora (`font-heading`, applied automatically to `h1`–`h6`); body uses DM Sans (`font-sans`).
-- Server Components by default. Add `"use client"` only for interactivity (enquiry list, filters UI, gallery, mobile menu, forms).
+- Server Components by default. Add `"use client"` only for interactivity (filters UI, search, gallery, share button, mobile menu, forms).
 - Accessibility: alt text on every image, keyboard access, visible focus states, correct heading order, sufficient contrast.
 
 ## Colour rules
@@ -128,9 +128,8 @@ All colours live as `--brand-*` CSS variables at the top of `src/app/globals.css
 | shadcn/ui (Radix base, `radix-nova` style) | UI primitives in `src/components/ui/` |
 | Sanity (v6) + `next-sanity` | Content. Studio embedded at `/studio` |
 | `@sanity/image-url` + `next/image` | Product images from `cdn.sanity.io` |
-| Zustand (`persist` middleware) | Enquiry list only, stored in localStorage |
 | lucide-react | Icons |
-| sonner | Toasts (e.g. "Added to enquiry list") |
+| sonner | Toasts (e.g. "Link copied" from the share button) |
 | `motion` (`motion/react`) | Animation (home hero entrance, crossfades). Wrap animated areas in `<MotionConfig reducedMotion="user">` |
 | pnpm | Package manager |
 | Vercel | Hosting |
@@ -170,27 +169,25 @@ The JS Mastery workflow skills in `.claude/skills/` (`/scope`, `/audit`, `/archi
 src/
   app/
     layout.tsx           root: <html>, fonts, globals.css only
-    (site)/              public pages + site layout (header, footer, enquiry button)
+    (site)/              public pages + site layout (footer, floating WhatsApp button, JSON-LD)
     studio/[[...tool]]/  Sanity Studio, outside (site) so it has no site chrome
     api/revalidate/      Sanity webhook → revalidateTag
   components/
     ui/       shadcn primitives (generated; edit sparingly)
     layout/   header, footer, mobile nav
     product/  card, grid, filters, gallery
-    enquiry/  floating button, sheet, WhatsApp message builder
   sanity/
     env.ts       validated env vars
     lib/         client.ts (read client), image.ts (urlFor)
     schemas/     one file per type, registered in index.ts
     queries.ts   all GROQ queries (defineQuery)
-  store/      Zustand stores (client-only)
   lib/        utils.ts and small pure helpers (e.g. WhatsApp URL builder)
 ```
 
 Responsibilities:
 
 - **Pages and Server Components** fetch content from Sanity and render it.
-- **Client Components** handle interaction only: the enquiry list, filter controls, the gallery, the mobile menu and forms. They never fetch from Sanity directly.
+- **Client Components** handle interaction only: filter controls, search, the gallery, the share button, the mobile menu and forms. They never fetch from Sanity directly.
 - **Sanity Studio** is the only place content is written. The site never writes to Sanity.
 - **`/api/revalidate`** is the only API route. It verifies the webhook signature and revalidates cache tags.
 - **WhatsApp** is reached by building `https://wa.me/<number>?text=<encoded message>` links. No API calls.
@@ -203,12 +200,17 @@ Responsibilities:
 
 Build to these unless the user changes them.
 
-- **Showcase, not shop.** No prices, cart or checkout. "Add to enquiry list" is the only add-to action.
-- **Every enquiry goes to WhatsApp.** This covers single product enquiries, the enquiry list and the distributor form. The distributor form validates on the client, then opens WhatsApp with the details prefilled. Nothing is stored.
-- **The WhatsApp number comes from `siteSettings`.** Fall back to `NEXT_PUBLIC_WHATSAPP_NUMBER` if it is empty. Numbers are digits only, with country code (`91…`).
-- **Filters and search state live in the URL** (`?category=…&area=…&form=…&q=…`), so filtered lists can be shared. Filtering happens on the server against Sanity.
+- **Showcase, not shop.** No prices, cart or checkout.
+- **Every enquiry goes straight to WhatsApp; there is no enquiry list.**
+  - Product cards and product pages: magenta "Enquire on WhatsApp" (`EnquireWhatsAppButton`).
+  - Header "Enquire now", hero "Contact us", and the green floating bubble (`WhatsAppFloat`): the general message.
+  - The distributor form (Phase 5) validates on the client, then opens WhatsApp with the details prefilled. Nothing is stored.
+- **All WhatsApp links come from `src/lib/whatsapp.ts`**: `getWhatsAppLink(message)`, `productEnquiryMessage(product)`, `generalEnquiryMessage()`, and `WHATSAPP_LINK_PROPS` (every link opens in a new tab with `rel="noopener noreferrer"`). Without a number, buttons fall back to `/contact`. Use `WhatsAppIcon` (`src/components/icons/`); the floating bubble uses the `whatsapp` colour token, buttons use `primary`.
+- **The WhatsApp number comes only from `NEXT_PUBLIC_WHATSAPP_NUMBER`** (digits; a bare 10-digit Indian number gets `91` added). It is not editable in Studio.
+- **Filters and search state live in the URL** (`?area=<slug>&category=<slug>&form=<Tablet…>&q=<text>`), one value per facet, so filtered lists can be shared. Build URLs with `src/lib/product-filters.ts`; filtering happens in GROQ on the server (`src/sanity/lib/catalogue.ts`), with search text always passed as a query parameter. Zero-count facet options are hidden.
+- **Inner pages** live in `src/app/(site)/(pages)/`, whose layout renders the sticky solid header. The shared product card is `src/components/product/product-card.tsx` (link + WhatsApp "Enquire" button below it).
+- **Unknown product slugs** render the branded not-found page with `noindex` (HTTP 200 because the route streams). Don't set `dynamicParams = false`: new products from Studio must work without a rebuild.
 - **Filters open in a `Sheet` on mobile.**
-- **The enquiry list is client state only.** It lives in `src/store/useEnquiryStore.ts` (Zustand + `persist`, localStorage key `genoine-enquiry`). Each item stores `id`, `slug`, `name`, `composition`, `packSize?`, `enquiryType` (`"box"` = strip/box, `"bulk"` = bulk/distributor) and an optional free-text `note` (the sheet's "Qty / note" field, e.g. "20 boxes"). There is no numeric quantity. The home hero does not add to the list; adding happens on product cards and product pages. It never stores whole Sanity documents. Read it only after hydration (`useHydrated` from `@/lib/use-hydrated`).
 - **Sanity reads go through `sanityFetch`** (`src/sanity/lib/fetch.ts`). It caches successful results by tag, returns the fallback (without caching it) on errors, and returns the fallback when Sanity isn't configured, so the site renders before `.env.local` exists.
 - **The header is `SiteHeader`** (`src/components/layout/`). The home page renders `variant="overlay"` inside its hero; other pages use `variant="solid"`. The `(site)` layout does not render a header. The full nav shows from `lg`; below that, a menu button opens a `Sheet`.
 - **Content freshness comes from a webhook, not polling.** Sanity webhook → `POST /api/revalidate` → `revalidateTag`. Queries are cached with `"use cache"` + `cacheTag` (e.g. `product`, `category`, `therapeuticArea`, `siteSettings`).
@@ -252,15 +254,15 @@ Dataset: `production`, public read. Every field description in Studio should be 
 
 `title` (required), `slug` (required), `description` (optional one-liner, max 80 chars, shown on the home hero card). Seed list: Gastro, Diabetes, Cardiac, Pain & Ortho, Antibiotics, Gynae, Paediatric, Derma, Nutraceuticals, Respiratory.
 
-`product` also has optional `heroImage` (transparent 3:4 cut-out for the home hero; without it the hero uses `/public/hero/bottle-N.png` by position) and `heroTagline` (currently not displayed).
+`product` also has optional `heroImage` (used as the card image when a product has no `images`) and `heroTagline` (not displayed). **The home hero never shows Sanity products:** it is a design showcase with the static bottles in `public/hero/` (`HERO_SHOWCASE_PRODUCTS` in `src/components/home/hero/hero-content.ts`). Real products appear only on `/products` and `/products/[slug]`.
 
 ### `siteSettings` (singleton)
 
-Fixed `_id: "siteSettings"`, opened from the Studio sidebar (`src/sanity/structure.ts`); can't be created, duplicated or deleted. Fields: `companyName`, `tagline`, `phone`, `whatsappNumber` (digits only), `email`, `address`, `businessHours`, `mapEmbedUrl`, `socialLinks[] { platform, url }`, `cin`, `disclaimer`. Read it on the server with `getSiteSettings()` (`src/sanity/lib/site-settings.ts`); it falls back to `NEXT_PUBLIC_WHATSAPP_NUMBER` for WhatsApp.
+Fixed `_id: "siteSettings"`, opened from the Studio sidebar (`src/sanity/structure.ts`); can't be created, duplicated or deleted. Fields: `companyName`, `tagline`, `phone`, `email`, `address`, `businessHours`, `mapEmbedUrl`, `socialLinks[] { platform, url }`, `cin`, `disclaimer`. Read it on the server with `getSiteSettings()` (`src/sanity/lib/site-settings.ts`). The WhatsApp number is **not** here (env only).
 
 ### Seed data
 
-`pnpm seed` (`scripts/seed.mjs`) creates clearly-fake sample content with fixed `_id`s: Site settings (no contact details), 8 therapeutic areas with icons, 4 categories, "Sample Product A–D" with hero images. It never overwrites existing documents; `pnpm seed --force` resets them.
+`pnpm seed` (`scripts/seed.mjs`) creates base content with fixed `_id`s: Site settings (no contact details), therapeutic areas (with icons from `public/specialities/`), and categories. It never overwrites existing documents; `pnpm seed --force` resets them. **It does not create products**: the sample products were deleted once the first real product (Biostone) was added. Real products are entered in Studio, using only facts printed on the pack.
 
 **Rules:**
 
@@ -271,24 +273,24 @@ Fixed `_id: "siteSettings"`, opened from the Studio sidebar (`src/sanity/structu
 
 ---
 
-# 9. Enquiry list behaviour
+# 9. WhatsApp enquiry
 
-- Add or remove products from any product card or product detail page. The button shows whether the product is already in the list.
-- A floating button shows the count. **Render the count only after the client has hydrated**, to avoid hydration mismatches with the persisted store.
-- A sheet lists the selected products, each with its enquiry type (strip/box or bulk/distributor), an optional text input "Qty / note" (placeholder "e.g. 20 boxes"), a remove button, "Clear list", and "Send enquiry on WhatsApp".
-- The WhatsApp message format is fixed:
+- Each product has its own page (`/products/[slug]`) with a large "Enquire on WhatsApp" button and a "Share product" button (native share sheet, else copy link + toast).
+- The product enquiry message format is fixed (`productEnquiryMessage`):
 
 ```
 Hello Genoine Lifecare, I'd like to enquire about:
-1. <name> — <composition> (<packSize>) — Qty: <note>
-2. <name> — <composition> (<packSize>) — Bulk / distributor enquiry — Qty: <note>
+*<name>* (<dosageForm>, <packSize>)
+Composition: <composition>
+Link: <absolute product URL>
 Name:
 City:
 ```
 
-Omit `(packSize)` and `— Qty: <note>` when they are empty. Build links with `whatsappUrl()` from `src/lib/whatsapp.ts`. URL-encode the whole message with `encodeURIComponent`.
+Leave out the parentheses part when dosage form and pack size are both empty.
 
-- "Enquire on WhatsApp" on a product page sends a single-product message in the same style.
+- General enquiries (`generalEnquiryMessage`): "Hello Genoine Lifecare, I'd like to know more about your products."
+- Never build `wa.me` URLs by hand; always use `getWhatsAppLink()` (it URL-encodes the message).
 
 ---
 
@@ -344,7 +346,6 @@ Read `NEXT_PUBLIC_*` values with literal `process.env.NAME` expressions so Next.
 - **Newly added shadcn components may use `bg-accent` for hover.** That is the tint here, which is correct. Never remap `--accent` to yellow.
 - **The Studio config (`sanity.config.ts`) is a client module** (`"use client"`). Do not import server-only code into it or into schemas.
 - **CORS:** the Studio needs `http://localhost:3000` (and the production domain) in Sanity's CORS origins with credentials allowed.
-- **The persisted Zustand store is empty on the server.** Anything that depends on it must render after mount.
 - **The Next.js block in this file is re-added by `next dev`.** Leave it in place.
 - The project runs on **Windows** with pnpm. Use cross-platform scripts (no `rm -rf` or `export` in `package.json` scripts).
 
@@ -363,7 +364,7 @@ Then test manually:
 - `pnpm dev`, then open the affected pages. Check the terminal and browser console for errors.
 - Check layouts at **360px, 768px and 1280px+**.
 - **Sanity changes:** `/studio` opens, the new schema appears, a document can be created and published, and it shows up on the site.
-- **Enquiry changes:** add and remove items, reload (the list persists), check the generated WhatsApp message text and that the `wa.me` link opens correctly.
+- **WhatsApp changes:** open each button (card, product page, header, hero, floating bubble), check the prefilled message text, that it opens in a new tab, and that the number has the country code.
 - **Filter changes:** filters update the URL, a copied URL restores the same results, and there is an empty state when nothing matches.
 
 Never claim a check passed without running it. If a check fails, say so and show the output.
@@ -385,10 +386,10 @@ Never claim a check passed without running it. If a check fails, say so and show
 
 Follow the PRD phases. Each step gets its own prompt file and approval.
 
-1. **Setup** ✅ — Next.js, Tailwind, shadcn, Sanity Studio, Zustand, theme tokens, fonts, folder structure
+1. **Setup** ✅ — Next.js, Tailwind, shadcn, Sanity Studio, theme tokens, fonts, folder structure
 2. **CMS** ✅ — schemas, queries, seed script with placeholder products, revalidation webhook
-3. **Catalogue** — product card, `/products` listing with filters and search, product detail
-4. **Enquiry** — Zustand store, floating button, sheet, WhatsApp message builder
+3. **Catalogue** ✅ — product card, `/products` listing with filters and search, product detail
+4. **Enquiry** ✅ — direct WhatsApp enquiry per product, floating WhatsApp button, share button (replaced the enquiry list)
 5. **Pages** — Home, About, Distributor, Contact, header, footer
 6. **Content** — import the real product list and cleaned pack photos
 7. **SEO and launch** — metadata, sitemap, structured data, analytics, domain, Search Console

@@ -1,3 +1,4 @@
+import { WhatsAppFloat } from "@/components/layout/whatsapp-float";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { Toaster } from "@/components/ui/sonner";
 import { organizationJsonLd, websiteJsonLd } from "@/lib/seo";
@@ -26,6 +27,7 @@ export default async function SiteLayout({ children }: LayoutProps<"/">) {
         </div>
       </footer>
 
+      <WhatsAppFloat />
       <Toaster />
     </>
   );
