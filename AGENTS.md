@@ -252,9 +252,9 @@ Dataset: `production`, public read. Every field description in Studio should be 
 
 ### `therapeuticArea`
 
-`title` (required), `slug` (required), `description` (optional one-liner, max 80 chars, shown on the home hero card). Seed list: Gastro, Diabetes, Cardiac, Pain & Ortho, Antibiotics, Gynae, Paediatric, Derma, Nutraceuticals, Respiratory.
+`title` (required), `slug` (required), `description` (optional one-liner, max 80 chars, shown on the speciality tiles). Seed list: Gastro, Diabetes, Cardiac, Pain & Ortho, Antibiotics, Gynae, Paediatric, Derma, Nutraceuticals, Respiratory.
 
-`product` also has optional `heroImage` (used as the card image when a product has no `images`) and `heroTagline` (not displayed). **The home hero never shows Sanity products:** it is a design showcase with the static bottles in `public/hero/` (`HERO_SHOWCASE_PRODUCTS` in `src/components/home/hero/hero-content.ts`). Real products appear only on `/products` and `/products/[slug]`.
+`product` also has optional `heroImage` (used as the card image when a product has no `images`) and `heroTagline` (not displayed). **Home hero:** static design bottles from `src/content/heroShowcase.ts` (images in `public/hero/`), one per speciality, not Sanity products. The info block shows the speciality title, line and "Explore N products" (count from Sanity via `AREA_PRODUCT_COUNTS_QUERY`, hidden when 0); "View products" links to `/products?area=<slug>`. Never delete the hero bottle files. There are no placeholder or sample products anywhere. **Home "Featured products"** (`src/components/home/featured/`) shows up to 8 `isFeatured` products with speciality tabs (only areas that have a featured product). Ticking Featured in Studio puts a product there.
 
 ### `siteSettings` (singleton)
 
@@ -262,7 +262,7 @@ Fixed `_id: "siteSettings"`, opened from the Studio sidebar (`src/sanity/structu
 
 ### Seed data
 
-`pnpm seed` (`scripts/seed.mjs`) creates base content with fixed `_id`s: Site settings (no contact details), therapeutic areas (with icons from `public/specialities/`), and categories. It never overwrites existing documents; `pnpm seed --force` resets them. **It does not create products**: the sample products were deleted once the first real product (Biostone) was added. Real products are entered in Studio, using only facts printed on the pack.
+`pnpm seed` (`scripts/seed.mjs`) creates base content with fixed `_id`s: Site settings (no contact details), therapeutic areas (with icons from `public/specialities/`), and categories. It never overwrites existing documents; `pnpm seed --force` resets them. `pnpm seed:clean` (`scripts/seed-clean.mjs`) deletes leftover sample product documents and unreferenced images. **It does not create products**: the sample products were deleted once the first real product (Biostone) was added. Real products are entered in Studio, using only facts printed on the pack.
 
 **Rules:**
 

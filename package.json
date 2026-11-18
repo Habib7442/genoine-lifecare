@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "typecheck": "next typegen && tsc --noEmit",
-    "seed": "node scripts/seed.mjs"
+    "seed": "node scripts/seed.mjs",
+    "seed:clean": "node scripts/seed-clean.mjs"
   },
   "dependencies": {
     "@sanity/image-url": "^2.1.1",

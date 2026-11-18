@@ -3,14 +3,14 @@
 import { motion } from "motion/react";
 import Image from "next/image";
 
-import type { HeroProduct } from "./types";
+import type { HeroShowcaseItem } from "./types";
 
 const FLOAT = { duration: 5, ease: "easeInOut", repeat: Infinity } as const;
 
 type HeroProductImageProps = {
-  product: HeroProduct;
+  product: HeroShowcaseItem;
   float: boolean;
-  /** The first product is likely the LCP element on mobile: load it eagerly. */
+  /** First product shown: also gets high fetch priority (it is the likely LCP element). */
   eager: boolean;
   /** Fade the new bottle in on product changes (false for the first render). */
   animateSwap: boolean;
@@ -53,7 +53,9 @@ export function HeroProductImage({ product, float, eager, animateSwap, className
               src={product.image.src}
               alt={product.image.alt}
               fill
-              loading={eager ? "eager" : "lazy"}
+              // Every hero bottle is above the fold and can become the LCP after a rotation: always eager.
+              loading="eager"
+              fetchPriority={eager ? "high" : "auto"}
               sizes="(min-width: 1024px) 32vw, 64vw"
               className="object-contain"
             />

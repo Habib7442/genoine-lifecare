@@ -109,3 +109,24 @@ export const RELATED_PRODUCTS_QUERY = defineQuery(`
 export const AREA_BY_SLUG_QUERY = defineQuery(`
   *[_type == "therapeuticArea" && slug.current == $slug][0]{ title, "slug": slug.current, description }
 `);
+
+/* -------------------------------------------------------------------------- */
+/* Home                                                                       */
+/* -------------------------------------------------------------------------- */
+
+/** Home "Featured products": up to 8 featured products with their therapeutic area (for the tabs). */
+export const FEATURED_PRODUCTS_QUERY = defineQuery(`
+  *[_type == "product" && isFeatured == true && defined(slug.current)]
+  | order(coalesce(order, 999) asc, name asc)[0...8]{
+    ${PRODUCT_CARD_FIELDS},
+    "area": therapeuticArea->{ title, "slug": slug.current, "order": coalesce(order, 999) }
+  }
+`);
+
+/** Product counts for the hero's speciality bottles (by therapeutic area slug). */
+export const AREA_PRODUCT_COUNTS_QUERY = defineQuery(`
+  *[_type == "therapeuticArea" && slug.current in $slugs]{
+    "slug": slug.current,
+    "count": count(*[_type == "product" && references(^._id)])
+  }
+`);

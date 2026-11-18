@@ -5,10 +5,10 @@ import Image from "next/image";
 import { cn } from "@/lib/utils";
 
 import { glass } from "./glass";
-import type { HeroProduct } from "./types";
+import type { HeroShowcaseItem } from "./types";
 
 type HeroSwitcherProps = {
-  products: HeroProduct[];
+  products: HeroShowcaseItem[];
   activeIndex: number;
   onSelect: (index: number) => void;
   /** Show the 6s progress bar and advance when it completes. */
@@ -50,7 +50,7 @@ export function HeroSwitcher({
             <button
               type="button"
               onClick={() => onSelect(index)}
-              aria-label={`Show ${product.name}`}
+              aria-label={`Show ${product.title}`}
               aria-pressed={active}
               className={cn(
                 "relative size-16 overflow-hidden rounded-xl border border-white/40 bg-white/20 backdrop-blur transition outline-none md:size-[72px]",

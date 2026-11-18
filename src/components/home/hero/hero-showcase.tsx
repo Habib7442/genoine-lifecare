@@ -2,24 +2,24 @@
 
 import { ArrowRight } from "lucide-react";
 import { MotionConfig, motion, useReducedMotion } from "motion/react";
+import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useRef, useState, type ReactNode } from "react";
 
 
 import { WhatsAppIcon } from "@/components/icons/whatsapp-icon";
 
-import { HeroAreaCard } from "./hero-area-card";
 import { HeroBubbles } from "./hero-bubbles";
-import { HERO_HEADLINE, HERO_PRODUCTS_LINK } from "./hero-content";
+import { HERO_HEADLINE } from "./hero-content";
 import { HeroProductImage } from "./hero-product";
 import { HeroSwitcher } from "./hero-switcher";
 import { HeroTrustPanel } from "./hero-trust-panel";
 import { EASE_OUT, HERO_TIMING } from "./motion";
 import { SwapIn } from "./swap-in";
-import type { HeroProduct } from "./types";
+import type { HeroShowcaseItem } from "./types";
 
 type HeroShowcaseProps = {
-  products: HeroProduct[];
+  products: HeroShowcaseItem[];
   /** Server-rendered header, placed inside the card on top of the background. */
   header: ReactNode;
   /** Server-rendered sky background (<picture>). */
@@ -38,7 +38,6 @@ export function HeroShowcase({ products, header, background, contactHref }: Hero
   const cardRef = useRef<HTMLElement>(null);
 
   const product = products[activeIndex];
-  const meta = [product.dosageForm, product.packSize].filter(Boolean).join(" · ");
 
   const contactIsWhatsApp = contactHref.startsWith("https://wa.me/");
 
@@ -116,14 +115,25 @@ export function HeroShowcase({ products, header, background, contactHref }: Hero
             <div className="relative z-10 order-4 px-5 md:px-10 lg:mt-6 lg:min-h-[92px] lg:max-w-[300px] lg:px-0 xl:max-w-[360px]">
               {/* Mobile: subtle glass card so the text stays readable over the sky and clouds */}
               <div className="max-md:rounded-2xl max-md:border max-md:border-white/30 max-md:bg-slate-900/25 max-md:p-4 max-md:backdrop-blur-md">
-                <SwapIn key={product.id} animate={hasSwitched} className="flex flex-col items-start gap-1">
-                  <p className="text-lg leading-snug font-medium text-white xl:text-xl">{product.composition}</p>
-                  {meta && <p className="text-xs tracking-wide text-white/90 uppercase">{meta}</p>}
-                  {product.keyUse && (
-                    <p className="mt-1 rounded-full border border-white/50 bg-white/25 px-3 py-1 text-sm font-medium text-white backdrop-blur-md text-shadow-[0_1px_3px_rgba(0,0,0,0.25)]">
-                      {product.keyUse}
-                    </p>
-                  )}
+                {/* The active bottle's speciality (static design content + product count from Sanity) */}
+                <SwapIn key={product.id} animate={hasSwitched} className="flex items-center gap-3">
+                  <Image
+                    src={product.icon}
+                    alt=""
+                    width={48}
+                    height={48}
+                    sizes="48px"
+                    className="size-12 shrink-0 object-contain drop-shadow-[0_6px_10px_rgba(0,0,0,0.18)]"
+                  />
+                  <div className="flex min-w-0 flex-col gap-0.5">
+                    <p className="font-heading text-lg leading-snug font-semibold text-white xl:text-xl">{product.title}</p>
+                    <p className="text-sm leading-snug text-white/90">{product.line}</p>
+                    {product.productCount > 0 && (
+                      <p className="mt-0.5 text-xs tracking-wide text-white/85 uppercase">
+                        Explore {product.productCount} {product.productCount === 1 ? "product" : "products"}
+                      </p>
+                    )}
+                  </div>
                 </SwapIn>
               </div>
             </div>
@@ -131,7 +141,7 @@ export function HeroShowcase({ products, header, background, contactHref }: Hero
             {/* Actions: two equal columns on mobile (stacked under 360px), inline on desktop */}
             <div className="relative z-10 order-5 grid grid-cols-2 gap-3 px-5 max-[339px]:grid-cols-1 md:max-w-[440px] md:px-10 lg:mt-5 lg:flex lg:max-w-none lg:px-0">
               <Link
-                href={HERO_PRODUCTS_LINK.href}
+                href={`/products?area=${encodeURIComponent(product.areaSlug)}`}
                 className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-primary px-4 text-[15px] font-medium whitespace-nowrap text-primary-foreground transition-colors outline-none hover:bg-brand-primary-light focus-visible:ring-2 focus-visible:ring-white lg:h-11 lg:w-auto lg:px-5 lg:text-sm"
               >
                 {/* One centred group; shorter label on very narrow screens */}
@@ -167,14 +177,6 @@ export function HeroShowcase({ products, header, background, contactHref }: Hero
               />
             </motion.div>
           </div>
-
-          {/* Right: therapeutic area card (desktop only) */}
-          <motion.div
-            className="absolute top-[60%] right-10 z-10 hidden -translate-y-1/2 lg:block xl:top-[40%]"
-            {...panelIn(3)}
-          >
-            <HeroAreaCard product={product} animateSwap={hasSwitched} />
-          </motion.div>
 
           {/* Thumbnails: after the bottle on mobile, bottom-right on desktop */}
           <motion.div

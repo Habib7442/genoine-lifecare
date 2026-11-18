@@ -12,6 +12,7 @@ import { sanityFetch } from "@/sanity/lib/fetch";
 import { urlFor } from "@/sanity/lib/image";
 import {
   AREA_BY_SLUG_QUERY,
+  FEATURED_PRODUCTS_QUERY,
   PRODUCT_DETAIL_QUERY,
   PRODUCT_FACETS_QUERY,
   PRODUCT_LIST_QUERY,
@@ -185,4 +186,22 @@ export async function getProductSlugs(): Promise<string[]> {
     fallback: [],
   });
   return results.map((r) => r.slug);
+}
+
+/* -------------------------------- featured -------------------------------- */
+
+export type FeaturedProduct = ProductCardData & {
+  area?: { title: string; slug: string; order: number };
+};
+
+type FeaturedResult = CardResult & { area?: { title: string; slug: string; order: number } | null };
+
+/** Up to 8 featured products (home "Featured products"), each with its therapeutic area for the tabs. */
+export async function getFeaturedProducts(): Promise<FeaturedProduct[]> {
+  const results = await sanityFetch<FeaturedResult[]>({
+    query: FEATURED_PRODUCTS_QUERY,
+    tags: CATALOGUE_TAGS,
+    fallback: [],
+  });
+  return results.map((result) => ({ ...toCard(result), area: result.area ?? undefined }));
 }

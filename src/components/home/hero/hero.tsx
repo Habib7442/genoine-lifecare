@@ -5,9 +5,27 @@ import { getImageProps } from "next/image";
 
 import { SiteHeader } from "@/components/layout/site-header";
 import { generalEnquiryMessage, getWhatsAppLink } from "@/lib/whatsapp";
+import { HERO_SHOWCASE } from "@/content/heroShowcase";
+import { sanityFetch } from "@/sanity/lib/fetch";
+import { AREA_PRODUCT_COUNTS_QUERY } from "@/sanity/queries";
 
-import { HERO_BACKGROUND, HERO_SHOWCASE_PRODUCTS } from "./hero-content";
+import { HERO_BACKGROUND } from "./hero-content";
 import { HeroShowcase } from "./hero-showcase";
+import type { HeroShowcaseItem } from "./types";
+
+type AreaCount = { slug: string; count: number };
+
+/** Static design bottles + live product count per speciality (0 when Sanity is unavailable). */
+async function getHeroItems(): Promise<HeroShowcaseItem[]> {
+  const counts = await sanityFetch<AreaCount[]>({
+    query: AREA_PRODUCT_COUNTS_QUERY,
+    params: { slugs: HERO_SHOWCASE.map((entry) => entry.areaSlug) },
+    tags: ["product", "therapeuticArea"],
+    fallback: [],
+  });
+  const bySlug = new Map(counts.map((row) => [row.slug, row.count]));
+  return HERO_SHOWCASE.map((entry) => ({ ...entry, productCount: bySlug.get(entry.areaSlug) ?? 0 }));
+}
 
 const hasMobileBackground = existsSync(
   path.join(process.cwd(), "public", HERO_BACKGROUND.mobile),
@@ -39,17 +57,16 @@ function HeroBackground() {
 }
 
 /**
- * Home page hero. A design showcase: it always shows the static designed bottles
- * (HERO_SHOWCASE_PRODUCTS), never catalogue products from Sanity. Real products
- * live on /products. "Contact us" opens a WhatsApp general enquiry.
+ * Home page hero: static design bottles (src/content/heroShowcase.ts), one per speciality.
+ * Real products appear in "Featured products" below. "Contact us" opens a WhatsApp general enquiry.
  */
-export function Hero() {
-  const products = HERO_SHOWCASE_PRODUCTS;
+export async function Hero() {
+  const items = await getHeroItems();
   const contactHref = getWhatsAppLink(generalEnquiryMessage()) ?? "/contact";
 
   return (
     <HeroShowcase
-      products={products}
+      products={items}
       header={<SiteHeader variant="overlay" />}
       background={<HeroBackground />}
       contactHref={contactHref}

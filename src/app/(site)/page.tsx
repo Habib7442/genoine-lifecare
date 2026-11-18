@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 
+import { FeaturedProductsSection } from "@/components/home/featured/featured-products-section";
 import { Hero } from "@/components/home/hero/hero";
 import { SpecialitiesSection } from "@/components/home/specialities/specialities-section";
 import { pageMetadata } from "@/lib/seo";
@@ -11,6 +12,7 @@ export default function HomePage() {
     <>
       <Hero />
       <SpecialitiesSection />
+      <FeaturedProductsSection />
     </>
   );
 }

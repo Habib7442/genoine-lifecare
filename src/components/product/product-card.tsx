@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { Badge } from "@/components/ui/badge";
+import { truncateWords } from "@/lib/text";
 import { cn } from "@/lib/utils";
 
 import { EnquireWhatsAppButton } from "./enquire-whatsapp-button";
@@ -32,7 +33,8 @@ export function ProductCard({ product, priority = false, className }: ProductCar
         href={`/products/${product.slug}`}
         className="flex flex-1 flex-col rounded-2xl outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
       >
-        <div className="relative aspect-square bg-white">
+        {/* Mobile 4:3 so wide packshots (carton + strip) show larger; square from md. */}
+        <div className="relative aspect-[4/3] bg-brand-tint md:aspect-square">
           {product.image ? (
             <Image
               src={product.image.src}
@@ -40,7 +42,7 @@ export function ProductCard({ product, priority = false, className }: ProductCar
               fill
               loading={priority ? "eager" : "lazy"}
               sizes="(min-width: 1280px) 22vw, (min-width: 768px) 30vw, 46vw"
-              className="object-contain p-5 transition-transform duration-300 motion-safe:group-hover:scale-[1.03]"
+              className="object-contain p-3 md:p-5 drop-shadow-[0_12px_18px_rgba(34,18,27,0.14)] transition-transform duration-300 motion-safe:group-hover:scale-[1.03]"
             />
           ) : (
             <div className="flex size-full items-center justify-center bg-secondary text-primary/40">
@@ -49,15 +51,19 @@ export function ProductCard({ product, priority = false, className }: ProductCar
           )}
         </div>
 
-        <div className="flex flex-1 flex-col gap-1.5 border-t px-4 pt-3 pb-4">
-          <h3 className="font-heading text-base leading-snug font-semibold text-foreground">{product.name}</h3>
-          <p className="line-clamp-2 text-sm text-muted-foreground">{product.composition}</p>
-          {(product.dosageForm || product.packSize) && (
-            <div className="mt-auto flex flex-wrap items-center gap-1.5 pt-1.5">
-              {product.dosageForm && <Badge variant="secondary">{product.dosageForm}</Badge>}
-              {product.packSize && <span className="text-xs text-muted-foreground">{product.packSize}</span>}
-            </div>
+        <div className="flex flex-1 flex-col gap-1.5 px-4 pt-3 pb-4">
+          {product.dosageForm && (
+            <Badge variant="secondary" className="self-start">
+              {product.dosageForm}
+            </Badge>
           )}
+          <h3 className="font-heading text-base leading-snug font-semibold text-foreground">{product.name}</h3>
+          {/* Mobile: shortened at a word boundary (CSS clamping can cut mid-word). Desktop: full text, 3 lines. */}
+          <p title={product.composition} className="line-clamp-2 text-sm text-muted-foreground md:line-clamp-3">
+            <span className="md:hidden">{truncateWords(product.composition, 34)}</span>
+            <span className="hidden md:inline">{product.composition}</span>
+          </p>
+          {product.packSize && <p className="mt-auto pt-1 text-xs text-muted-foreground">{product.packSize}</p>}
         </div>
       </Link>
 

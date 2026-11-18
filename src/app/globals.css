@@ -16,6 +16,7 @@
   --brand-accent: #ffc93c; /* yellow — CTAs & badges ONLY */
   --brand-accent-foreground: #22121b; /* always dark text on yellow */
   --brand-tint: #fbf3f7; /* very light pink surface */
+  --brand-tint-strong: #f3e1eb; /* hover on tint surfaces (tabs) */
   --brand-ink: #22121b; /* dark text */
   --brand-ink-muted: #6b5a64; /* secondary text */
   --brand-white: #ffffff;
@@ -89,6 +90,7 @@
   --color-brand-accent: var(--brand-accent);
   --color-brand-accent-foreground: var(--brand-accent-foreground);
   --color-brand-tint: var(--brand-tint);
+  --color-brand-tint-strong: var(--brand-tint-strong);
   --color-brand-ink: var(--brand-ink);
   --color-brand-ink-muted: var(--brand-ink-muted);
   --color-whatsapp: var(--whatsapp);

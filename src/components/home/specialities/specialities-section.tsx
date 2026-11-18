@@ -89,9 +89,9 @@ export async function SpecialitiesSection() {
   const areas = await getAreas();
 
   return (
-    <section aria-labelledby="specialities-heading" className="py-16 md:py-24">
+    <section aria-labelledby="specialities-heading" className="py-12 md:py-24">
       <div className="mx-auto w-full max-w-7xl px-5 md:px-10">
-        <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between md:mb-10">
+        <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between md:mb-10">
           <div>
             <p className="text-xs font-semibold tracking-widest text-primary uppercase">Our specialities</p>
             <h2
