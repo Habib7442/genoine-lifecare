@@ -20,8 +20,8 @@ export const siteConfig = {
   cin: "U21001AS2026PTC030380",
   // JPEG keeps it small enough for WhatsApp link previews (~300 KB limit).
   ogImage: "/opengraph-image.jpg",
-  /** Brand icon (app/icon.png, 512×512). */
-  logo: "/icon.png",
+  /** Company seal (public/brand/logo.webp), used as the Organization logo. */
+  logo: "/brand/logo.webp",
   keywords: [
     "pharmaceutical company Assam",
     "pharma company Northeast India",

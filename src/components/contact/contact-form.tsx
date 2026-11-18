@@ -1,14 +1,14 @@
 "use client";
 
 import { BookOpen, Building2, Mail, Phone, User } from "lucide-react";
-import { type FormEvent, type ReactNode, useId, useState } from "react";
+import { type FormEvent, useId, useState } from "react";
 
-import { WhatsAppIcon } from "@/components/icons/whatsapp-icon";
+import { FIELD_CLASS, FormField as Field, SELECT_TRIGGER_CLASS, TEXTAREA_CLASS } from "@/components/forms/form-field";
+import { WhatsAppSubmit } from "@/components/forms/whatsapp-submit";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { cn } from "@/lib/utils";
+import { isEmail, isIndianMobile, PHONE_ERROR } from "@/lib/validation";
 import { contactEnquiryMessage, getWhatsAppLink } from "@/lib/whatsapp";
 
 export const SUBJECTS = ["General question", "Product enquiry", "Become a distributor", "Other"] as const;
@@ -43,62 +43,14 @@ const EMPTY: Values = {
   message: "",
 };
 
-/** 10-digit Indian mobile (starts 6–9), optionally prefixed with +91, 91 or 0. */
-function isIndianMobile(phone: string): boolean {
-  if (!/^[\d\s()+-]+$/.test(phone.trim())) return false;
-  const digits = phone.replace(/\D/g, "");
-  const local = digits.length === 12 && digits.startsWith("91") ? digits.slice(2) : digits.length === 11 && digits.startsWith("0") ? digits.slice(1) : digits;
-  return /^[6-9]\d{9}$/.test(local);
-}
-
 function validate(values: Values): Errors {
   const errors: Errors = {};
   if (!values.firstName.trim()) errors.firstName = "Please enter your first name.";
-  if (!isIndianMobile(values.phone)) errors.phone = "Please enter a valid 10-digit mobile number (with or without +91).";
-  if (values.email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email.trim()))
+  if (!isIndianMobile(values.phone)) errors.phone = PHONE_ERROR;
+  if (values.email.trim() && !isEmail(values.email))
     errors.email = "Please enter a valid email address.";
   if (!values.message.trim()) errors.message = "Please write a short message.";
   return errors;
-}
-
-const FIELD_CLASS = "h-12 rounded-xl pl-11 text-base md:text-sm";
-
-type FieldProps = {
-  id: string;
-  label: string;
-  required?: boolean;
-  error?: string;
-  icon?: ReactNode;
-  className?: string;
-  children: ReactNode;
-};
-
-function Field({ id, label, required, error, icon, className, children }: FieldProps) {
-  return (
-    <div className={cn("flex flex-col gap-2", className)}>
-      <Label htmlFor={id} className="text-sm font-medium text-foreground">
-        {label}
-        {required && (
-          <span className="text-destructive" aria-hidden="true">
-            *
-          </span>
-        )}
-      </Label>
-      <div className="relative">
-        {icon && (
-          <span className="pointer-events-none absolute top-1/2 left-4 -translate-y-1/2 text-muted-foreground [&_svg]:size-[18px]" aria-hidden="true">
-            {icon}
-          </span>
-        )}
-        {children}
-      </div>
-      {error && (
-        <p id={`${id}-error`} className="text-sm text-destructive">
-          {error}
-        </p>
-      )}
-    </div>
-  );
 }
 
 type ContactFormProps = {
@@ -219,7 +171,7 @@ export function ContactForm({ email, initialSubject }: ContactFormProps) {
         </Field>
         <Field id={id("subject")} label="Subject" icon={<BookOpen />}>
           <Select value={values.subject} onValueChange={set("subject")}>
-            <SelectTrigger id={id("subject")} className="h-12! w-full rounded-xl pl-11 text-base md:text-sm">
+            <SelectTrigger id={id("subject")} className={SELECT_TRIGGER_CLASS}>
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -237,22 +189,11 @@ export function ContactForm({ email, initialSubject }: ContactFormProps) {
             placeholder="Type here…"
             value={values.message}
             onChange={(event) => set("message")(event.target.value)}
-            className="min-h-36 rounded-xl px-4 py-3 text-base md:text-sm"
+            className={TEXTAREA_CLASS}
           />
         </Field>
 
-        <div className="sm:col-span-2">
-          <button
-            type="submit"
-            className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-primary px-6 text-base font-medium text-primary-foreground transition-colors outline-none hover:bg-brand-primary-light focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 sm:w-auto"
-          >
-            <WhatsAppIcon className="size-5" />
-            Send on WhatsApp
-          </button>
-          <p role="status" className="mt-3 text-sm font-medium text-primary empty:hidden">
-            {sent ? "WhatsApp opened — send the message to reach us." : ""}
-          </p>
-        </div>
+        <WhatsAppSubmit sent={sent} />
       </form>
     </div>
   );

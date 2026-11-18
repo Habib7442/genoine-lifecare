@@ -13,6 +13,7 @@ import { sanityFetch } from "@/sanity/lib/fetch";
 import type { SiteSettings } from "@/sanity/lib/site-settings";
 import { FOOTER_AREAS_QUERY } from "@/sanity/queries";
 
+import { BrandSeal } from "./brand-seal";
 import { NAV_LINKS } from "./nav-links";
 
 /** Static: Cache Components doesn't allow reading the clock during prerender. Update yearly. */
@@ -69,8 +70,9 @@ export async function SiteFooter({ settings }: { settings: SiteSettings }) {
           <div className="col-span-2 md:col-span-1">
             <Link
               href="/"
-              className="rounded-sm font-heading text-xl font-semibold tracking-tight outline-none focus-visible:ring-2 focus-visible:ring-white"
+              className="inline-flex items-center gap-3 rounded-sm font-heading text-xl font-semibold tracking-tight outline-none focus-visible:ring-2 focus-visible:ring-white"
             >
+              <BrandSeal className="size-14" />
               {siteConfig.name}
             </Link>
             <p className="mt-3 max-w-xs text-sm leading-relaxed text-primary-foreground/80">

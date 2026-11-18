@@ -204,7 +204,7 @@ Build to these unless the user changes them.
 - **Every enquiry goes straight to WhatsApp; there is no enquiry list.**
   - Product cards and product pages: magenta "Enquire on WhatsApp" (`EnquireWhatsAppButton`).
   - Header "Enquire now", hero "Contact us", and the green floating bubble (`WhatsAppFloat`): the general message.
-  - The distributor form (Phase 5) validates on the client, then opens WhatsApp with the details prefilled. Nothing is stored.
+  - The Contact and Distributor forms validate on the client (shared `FormField`, `WhatsAppSubmit` in `src/components/forms/`, `isIndianMobile` in `src/lib/validation.ts`), then open WhatsApp via `contactEnquiryMessage()` / `distributorEnquiryMessage()` (mailto fallback without a number). Nothing is stored. Distributor copy lives in `src/content/distributor.ts`.
 - **All WhatsApp links come from `src/lib/whatsapp.ts`**: `getWhatsAppLink(message)`, `productEnquiryMessage(product)`, `generalEnquiryMessage()`, and `WHATSAPP_LINK_PROPS` (every link opens in a new tab with `rel="noopener noreferrer"`). Without a number, buttons fall back to `/contact`. Use `WhatsAppIcon` (`src/components/icons/`); the floating bubble uses the `whatsapp` colour token, buttons use `primary`.
 - **The WhatsApp number comes only from `NEXT_PUBLIC_WHATSAPP_NUMBER`** (digits; a bare 10-digit Indian number gets `91` added). It is not editable in Studio.
 - **Filters and search state live in the URL** (`?area=<slug>&category=<slug>&form=<Tablet…>&q=<text>`), one value per facet, so filtered lists can be shared. Build URLs with `src/lib/product-filters.ts`; filtering happens in GROQ on the server (`src/sanity/lib/catalogue.ts`), with search text always passed as a query parameter. Zero-count facet options are hidden.
@@ -216,7 +216,7 @@ Build to these unless the user changes them.
 - **Content freshness comes from a webhook, not polling.** Sanity webhook → `POST /api/revalidate` → `revalidateTag`. Queries are cached with `"use cache"` + `cacheTag` (e.g. `product`, `category`, `therapeuticArea`, `siteSettings`).
 - **SEO lives in `src/lib/seo.ts`** (`siteConfig`, `buildMetadata`, `pageMetadata`, `productMetadata`, `therapeuticAreaMetadata`, JSON-LD generators) and `src/components/seo/JsonLd.tsx`. New pages export `metadata = pageMetadata.<page>` or call `buildMetadata`; never hand-write meta tags. Product JSON-LD must never include `offers`, prices, ratings or reviews. `/products?area=` pages canonicalise to `/products`. `robots.ts` blocks all indexing when `NEXT_PUBLIC_SITE_URL` is `localhost` or `*.vercel.app`.
 - **`siteSettings` is a singleton** in Studio: one document, shown as a single item in the Studio structure, not a list.
-- **Header uses a text logo** ("Genoine Lifecare") until the real logo exists.
+- **Logo:** the circular seal `public/brand/logo.webp` (`BrandSeal` in `src/components/layout/brand-seal.tsx`) sits next to the "Genoine Lifecare" name in the header, mobile menu and footer, and is the Organization JSON-LD logo. The site palette stays magenta for now (user decision); a re-theme to the logo colours is a separate step.
 - **The palette is provisional** and will change after the logo is designed. That is why every colour goes through tokens.
 
 ---
@@ -394,7 +394,7 @@ Follow the PRD phases. Each step gets its own prompt file and approval.
 2. **CMS** ✅ — schemas, queries, seed script with placeholder products, revalidation webhook
 3. **Catalogue** ✅ — product card, `/products` listing with filters and search, product detail
 4. **Enquiry** ✅ — direct WhatsApp enquiry per product, floating WhatsApp button, share button (replaced the enquiry list)
-5. **Pages** — Home, About, Distributor, Contact, header, footer
+5. **Pages** — Home, About, Distributor, Contact, header, footer (About, Contact, Distributor, header and footer done; remaining Home sections: Why Genoine, New launches, contact strip, distributor CTA)
 6. **Content** — import the real product list and cleaned pack photos
 7. **SEO and launch** — metadata, sitemap, structured data, analytics, domain, Search Console
 

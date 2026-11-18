@@ -56,6 +56,32 @@ export function contactEnquiryMessage(enquiry: ContactEnquiry): string {
     .join("\n");
 }
 
+export type DistributorEnquiry = {
+  name: string;
+  firm: string;
+  phone: string;
+  city: string;
+  state: string;
+  businessType: string;
+  message?: string;
+};
+
+/** Distributor page form → WhatsApp / email text. The message line is left out when empty. */
+export function distributorEnquiryMessage(enquiry: DistributorEnquiry): string {
+  return [
+    "Hello Genoine Lifecare, I'd like to become a partner.",
+    `Name: ${enquiry.name}`,
+    `Firm: ${enquiry.firm}`,
+    `Phone: ${enquiry.phone}`,
+    `City / district: ${enquiry.city}`,
+    `State: ${enquiry.state}`,
+    `Business type: ${enquiry.businessType}`,
+    enquiry.message ? `Message: ${enquiry.message}` : null,
+  ]
+    .filter((line): line is string => line !== null)
+    .join("\n");
+}
+
 export type EnquiryProduct = {
   name: string;
   slug: string;

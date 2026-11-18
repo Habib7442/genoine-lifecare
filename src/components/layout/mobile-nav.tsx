@@ -17,6 +17,7 @@ import {
 import { WhatsAppIcon } from "@/components/icons/whatsapp-icon";
 import { cn } from "@/lib/utils";
 
+import { BrandSeal } from "./brand-seal";
 import { HEADER_CTA_LABEL, NAV_LINKS, isActiveLink } from "./nav-links";
 
 type MobileNavProps = {
@@ -50,7 +51,8 @@ export function MobileNav({ tone, ctaHref, className }: MobileNavProps) {
       </SheetTrigger>
       <SheetContent side="right" className="w-[85vw] max-w-sm">
         <SheetHeader>
-          <SheetTitle className="font-heading text-lg text-primary">
+          <SheetTitle className="flex items-center gap-2.5 font-heading text-lg text-primary">
+            <BrandSeal className="size-9" />
             Genoine Lifecare
           </SheetTitle>
           <SheetDescription className="sr-only">Site navigation</SheetDescription>

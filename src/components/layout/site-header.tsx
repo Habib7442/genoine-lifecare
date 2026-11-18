@@ -4,6 +4,7 @@ import { WhatsAppIcon } from "@/components/icons/whatsapp-icon";
 import { cn } from "@/lib/utils";
 import { generalEnquiryMessage, getWhatsAppLink, WHATSAPP_LINK_PROPS } from "@/lib/whatsapp";
 
+import { BrandSeal } from "./brand-seal";
 import { DesktopNav } from "./desktop-nav";
 import { MobileNav } from "./mobile-nav";
 import { HEADER_CTA_LABEL } from "./nav-links";
@@ -37,12 +38,13 @@ export function SiteHeader({ variant = "solid", className }: SiteHeaderProps) {
       <Link
         href="/"
         className={cn(
-          "rounded-sm font-heading text-lg font-semibold tracking-tight whitespace-nowrap outline-none focus-visible:ring-2",
+          "flex items-center gap-2.5 rounded-sm font-heading text-lg font-semibold tracking-tight whitespace-nowrap outline-none focus-visible:ring-2",
           tone === "light"
             ? "text-white focus-visible:ring-white"
             : "text-primary focus-visible:ring-ring",
         )}
       >
+        <BrandSeal preload className="size-10 md:size-11" />
         Genoine Lifecare
       </Link>
 

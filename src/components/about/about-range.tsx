@@ -51,13 +51,13 @@ export function AboutRange({ areas, forms, products }: AboutRangeProps) {
             <ul
               aria-label="Therapeutic areas"
               className={cn(
-                "-mx-5 flex snap-x snap-mandatory scroll-px-5 gap-4 overflow-x-auto px-5 pb-2 [scrollbar-width:none] md:mx-0 md:grid md:grid-cols-2 md:overflow-visible md:px-0 md:pb-0 [&::-webkit-scrollbar]:hidden",
+                "grid gap-4 md:grid-cols-2 md:gap-5",
                 DESKTOP_COLS[Math.min(areas.length, 3) - 1],
               )}
             >
               {areas.map((area, index) => (
-                <li key={area.id} className="w-[62vw] max-w-[260px] shrink-0 snap-start md:w-auto md:max-w-none">
-                  <SpecialityTile area={area} index={index} size="compact" className="h-full" />
+                <li key={area.id}>
+                  <SpecialityTile area={area} index={index} className="h-full" />
                 </li>
               ))}
             </ul>
