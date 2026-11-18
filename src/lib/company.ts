@@ -1,5 +1,11 @@
 /** Public registration facts (from the certificate of incorporation). */
 
+/** Default contact email (company domain). Studio → Site settings → Email overrides it. */
+export const CONTACT_EMAIL = "support@genoinelifecare.com";
+
+/** Shown as the location when Site settings has no address. */
+export const FALLBACK_ADDRESS = "Karimganj, Assam, India";
+
 /** Registrar of Companies for the CIN. */
 export const REGISTRAR = "ROC Guwahati";
 

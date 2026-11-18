@@ -1,5 +1,6 @@
 import "server-only";
 
+import { CONTACT_EMAIL } from "@/lib/company";
 import { sanityFetch } from "@/sanity/lib/fetch";
 import { SITE_SETTINGS_QUERY } from "@/sanity/queries";
 
@@ -9,9 +10,12 @@ export type SiteSettings = {
   companyName?: string;
   tagline?: string;
   phone?: string;
-  email?: string;
+  /** Always set: Studio value, else CONTACT_EMAIL. */
+  email: string;
   address?: string;
   businessHours?: string;
+  /** Address or "lat, lng" for the Contact page map. */
+  mapQuery?: string;
   cin?: string;
   /** Medical disclaimer for the footer and product pages. */
   disclaimer?: string;
@@ -30,6 +34,7 @@ type SiteSettingsResult = {
   email?: string | null;
   address?: string | null;
   businessHours?: string | null;
+  mapQuery?: string | null;
   cin?: string | null;
   disclaimer?: string | null;
   distributorCtaText?: string | null;
@@ -52,9 +57,10 @@ export async function getSiteSettings(): Promise<SiteSettings> {
     companyName: result?.companyName || undefined,
     tagline: result?.tagline || undefined,
     phone: result?.phone || undefined,
-    email: result?.email || undefined,
+    email: result?.email || CONTACT_EMAIL,
     address: result?.address || undefined,
     businessHours: result?.businessHours || undefined,
+    mapQuery: result?.mapQuery?.trim() || undefined,
     cin: result?.cin || undefined,
     disclaimer: result?.disclaimer || undefined,
     distributorCtaText: result?.distributorCtaText || undefined,

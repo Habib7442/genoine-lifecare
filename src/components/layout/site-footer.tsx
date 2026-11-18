@@ -1,11 +1,11 @@
-import { ArrowRight, Clock, Mail, MapPin, Phone } from "lucide-react";
+import { Clock, Mail, MapPin, Phone } from "lucide-react";
 import Link from "next/link";
 import type { ReactNode } from "react";
 
 import { SocialIcon } from "@/components/icons/social-icon";
 import { WhatsAppIcon } from "@/components/icons/whatsapp-icon";
 import { FALLBACK_DISCLAIMER } from "@/lib/disclaimer";
-import { REGISTRAR } from "@/lib/company";
+import { FALLBACK_ADDRESS, REGISTRAR } from "@/lib/company";
 import { cn } from "@/lib/utils";
 import { siteConfig } from "@/lib/seo";
 import { generalEnquiryMessage, getWhatsAppLink, WHATSAPP_LINK_PROPS } from "@/lib/whatsapp";
@@ -17,9 +17,6 @@ import { NAV_LINKS } from "./nav-links";
 
 /** Static: Cache Components doesn't allow reading the clock during prerender. Update yearly. */
 const COPYRIGHT_YEAR = 2026;
-
-/** Shown in the Contact column until Site settings has contact details. */
-const FALLBACK_LOCATION = "Karimganj, Assam, India";
 
 
 const LEGAL_LINKS = [
@@ -62,9 +59,6 @@ export async function SiteFooter({ settings }: { settings: SiteSettings }) {
   const companyName = settings.companyName ?? siteConfig.legalName;
   const cin = settings.cin ?? siteConfig.cin;
   const iconClass = "size-4";
-  const hasContact = Boolean(
-    settings.address || settings.phone || settings.email || settings.businessHours || settings.socialProfiles.length,
-  );
 
   return (
     <footer className="relative overflow-hidden bg-primary text-primary-foreground">
@@ -92,28 +86,13 @@ export async function SiteFooter({ settings }: { settings: SiteSettings }) {
             </a>
           </div>
 
-          {/* Contact (only fields filled in Site settings) */}
+          {/* Contact: email + location always; phone, hours and socials only when set in Site settings */}
           <div className="col-span-2 md:col-span-1 lg:order-last">
             <FooterHeading>Contact</FooterHeading>
-            {!hasContact ? (
-              // Nothing filled in Site settings yet: show the town and point to the contact page.
               <ul className="space-y-3">
-                <ContactRow icon={<MapPin className={iconClass} />}>{FALLBACK_LOCATION}</ContactRow>
-                <li>
-                  <Link href="/contact" className={cn(LINK_CLASS, "inline-flex items-center gap-1.5 font-medium text-primary-foreground")}>
-                    Get in touch
-                    <ArrowRight className="size-4" aria-hidden="true" />
-                  </Link>
-                </li>
-              </ul>
-            ) : (
-              <>
-              <ul className="space-y-3">
-                {settings.address && (
-                  <ContactRow icon={<MapPin className={iconClass} />}>
-                    <address className="not-italic">{settings.address}</address>
-                  </ContactRow>
-                )}
+                <ContactRow icon={<MapPin className={iconClass} />}>
+                  <address className="not-italic">{settings.address ?? FALLBACK_ADDRESS}</address>
+                </ContactRow>
                 {settings.phone && (
                   <ContactRow icon={<Phone className={iconClass} />}>
                     <a href={`tel:${settings.phone.replace(/[^\d+]/g, "")}`} className={LINK_CLASS}>
@@ -121,13 +100,11 @@ export async function SiteFooter({ settings }: { settings: SiteSettings }) {
                     </a>
                   </ContactRow>
                 )}
-                {settings.email && (
-                  <ContactRow icon={<Mail className={iconClass} />}>
-                    <a href={`mailto:${settings.email}`} className={LINK_CLASS}>
-                      {settings.email}
-                    </a>
-                  </ContactRow>
-                )}
+                <ContactRow icon={<Mail className={iconClass} />}>
+                  <a href={`mailto:${settings.email}`} className={LINK_CLASS}>
+                    {settings.email}
+                  </a>
+                </ContactRow>
                 {settings.businessHours && (
                   <ContactRow icon={<Clock className={iconClass} />}>{settings.businessHours}</ContactRow>
                 )}
@@ -150,8 +127,6 @@ export async function SiteFooter({ settings }: { settings: SiteSettings }) {
                   ))}
                 </ul>
               )}
-              </>
-            )}
           </div>
 
           {/* Quick links */}

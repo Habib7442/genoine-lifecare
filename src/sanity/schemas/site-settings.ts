@@ -58,11 +58,12 @@ export const siteSettings = defineType({
       description: "For example: Mon–Sat, 10:00 am – 6:00 pm",
     }),
     defineField({
-      name: "mapEmbedUrl",
-      title: "Google Maps embed URL",
-      type: "url",
+      name: "mapQuery",
+      title: "Map location",
+      type: "string",
       group: "contact",
-      description: "In Google Maps: Share → Embed a map → copy only the link inside src=\"…\".",
+      description:
+        "Optional. What the map on the Contact page should show: an address, or coordinates like 24.8649, 92.3591 (in Google Maps, right-click your office and click the numbers to copy them). Leave empty to use the office address.",
     }),
     defineField({
       name: "socialLinks",

@@ -30,6 +30,32 @@ export function generalEnquiryMessage(): string {
   return "Hello Genoine Lifecare, I'd like to know more about your products.";
 }
 
+export type ContactEnquiry = {
+  firstName: string;
+  lastName?: string;
+  email?: string;
+  phone: string;
+  company?: string;
+  subject: string;
+  message: string;
+};
+
+/** Contact page form → WhatsApp / email text. Empty optional fields are left out. */
+export function contactEnquiryMessage(enquiry: ContactEnquiry): string {
+  const name = [enquiry.firstName, enquiry.lastName].filter(Boolean).join(" ");
+  return [
+    "Hello Genoine Lifecare,",
+    `Name: ${name}`,
+    `Phone: ${enquiry.phone}`,
+    enquiry.email ? `Email: ${enquiry.email}` : null,
+    enquiry.company ? `Firm: ${enquiry.company}` : null,
+    `Subject: ${enquiry.subject}`,
+    `Message: ${enquiry.message}`,
+  ]
+    .filter((line): line is string => line !== null)
+    .join("\n");
+}
+
 export type EnquiryProduct = {
   name: string;
   slug: string;

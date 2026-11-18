@@ -258,11 +258,11 @@ Dataset: `production`, public read. Every field description in Studio should be 
 
 ### `siteSettings` (singleton)
 
-Fixed `_id: "siteSettings"`, opened from the Studio sidebar (`src/sanity/structure.ts`); can't be created, duplicated or deleted. Fields: `companyName`, `tagline`, `phone`, `email`, `address`, `businessHours`, `mapEmbedUrl`, `socialLinks[] { platform, url }`, `cin`, `disclaimer`. Read it on the server with `getSiteSettings()` (`src/sanity/lib/site-settings.ts`). The WhatsApp number is **not** here (env only).
+Fixed `_id: "siteSettings"`, opened from the Studio sidebar (`src/sanity/structure.ts`); can't be created, duplicated or deleted. Fields: `companyName`, `tagline`, `phone`, `email`, `address`, `businessHours`, `mapQuery`, `distributorCtaText`, `socialLinks[] { platform, url }`, `cin`, `disclaimer`. Read it on the server with `getSiteSettings()` (`src/sanity/lib/site-settings.ts`). The WhatsApp number is **not** here (env only). Email falls back to `CONTACT_EMAIL` (`support@genoinelifecare.com`) and the address to `FALLBACK_ADDRESS` ("Karimganj, Assam, India"), both in `src/lib/company.ts`. `/contact` (`src/components/contact/`) shows these details, a keyless Google Maps embed of `mapQuery` (address or "lat, lng"; coordinates get the business name as the pin label), else the address; hidden when neither exists and a form that opens WhatsApp via `contactEnquiryMessage()` (mailto fallback without a number).
 
 ### `aboutPage` (singleton)
 
-Fixed `_id: "aboutPage"`, opened from the Studio sidebar under Site settings. Every text field is optional and falls back to `src/content/about.ts`. `leaders[]` (photo with alt, name, role, bio) hides the Leadership section when empty. `incorporatedOn` falls back to `INCORPORATED_ON` in `src/lib/company.ts` (with `REGISTRAR`). Read with `getAboutPage()` / `getAboutStats()` (`src/sanity/lib/about.ts`); the fact strip uses only real counts and hides zeros. Shared page pieces: `PageHeader` (`components/layout/`), `FeatureCard`, `DistributorCta` and `FadeIn` (`components/shared/`).
+Fixed `_id: "aboutPage"`, opened from the Studio sidebar under Site settings. Every text field is optional and falls back to `src/content/about.ts`. `leaders[]` (photo with alt, name, role, bio) hides the Leadership section when empty. `incorporatedOn` falls back to `INCORPORATED_ON` in `src/lib/company.ts` (with `REGISTRAR`). Read with `getAboutPage()` / `getAboutStats()` (`src/sanity/lib/about.ts`); the fact strip uses only real counts and hides zeros. Shared page pieces: `PageHeader` (`components/layout/`; optional `background` banner image from `public/banners/`, mobile variant used only if the file exists), `FeatureCard`, `DistributorCta` and `FadeIn` (`components/shared/`).
 
 ### Seed data
 
