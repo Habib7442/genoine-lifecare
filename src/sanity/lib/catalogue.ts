@@ -18,6 +18,7 @@ import {
   PRODUCT_LIST_QUERY,
   PRODUCT_SITEMAP_QUERY,
   RELATED_PRODUCTS_QUERY,
+  SHOWCASE_PRODUCTS_QUERY,
 } from "@/sanity/queries";
 
 const CATALOGUE_TAGS = ["product", "category", "therapeuticArea"];
@@ -197,6 +198,16 @@ export type FeaturedProduct = ProductCardData & {
 type FeaturedResult = CardResult & { area?: { title: string; slug: string; order: number } | null };
 
 /** Up to 8 featured products (home "Featured products"), each with its therapeutic area for the tabs. */
+/** Up to 8 products, featured first (About page strip). */
+export async function getShowcaseProducts(): Promise<ProductCardData[]> {
+  const results = await sanityFetch<CardResult[]>({
+    query: SHOWCASE_PRODUCTS_QUERY,
+    tags: CATALOGUE_TAGS,
+    fallback: [],
+  });
+  return results.map(toCard);
+}
+
 export async function getFeaturedProducts(): Promise<FeaturedProduct[]> {
   const results = await sanityFetch<FeaturedResult[]>({
     query: FEATURED_PRODUCTS_QUERY,

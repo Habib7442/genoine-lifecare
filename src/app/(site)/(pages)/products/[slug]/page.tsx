@@ -15,6 +15,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { absoluteUrl, breadcrumbJsonLd, productJsonLd, productMetadata, type SeoProduct } from "@/lib/seo";
 import { getProductBySlug, getProductSlugs, getRelatedProducts } from "@/sanity/lib/catalogue";
 import { getSiteSettings } from "@/sanity/lib/site-settings";
+import { FALLBACK_DISCLAIMER } from "@/lib/disclaimer";
 import type { ProductDetail } from "@/components/product/types";
 
 /**
@@ -28,8 +29,6 @@ export async function generateStaticParams(): Promise<{ slug: string }[]> {
   return (slugs.length ? slugs : [PLACEHOLDER_SLUG]).map((slug) => ({ slug }));
 }
 
-const FALLBACK_DISCLAIMER =
-  "Products are for use under medical supervision. Consult a registered medical practitioner before use.";
 
 function toSeoProduct(product: ProductDetail): SeoProduct {
   return {

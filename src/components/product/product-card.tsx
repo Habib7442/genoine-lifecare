@@ -13,6 +13,8 @@ type ProductCardProps = {
   product: ProductCardData;
   /** Load the image eagerly (first row above the fold). */
   priority?: boolean;
+  /** `compact`: 4:3 image at every size, 2-line composition, no pack size (product strips). */
+  size?: "default" | "compact";
   className?: string;
 };
 
@@ -20,7 +22,8 @@ type ProductCardProps = {
  * Shared product card. The image and text link to the product page; the WhatsApp
  * "Enquire" button sits below as a sibling, so it never triggers navigation.
  */
-export function ProductCard({ product, priority = false, className }: ProductCardProps) {
+export function ProductCard({ product, priority = false, size = "default", className }: ProductCardProps) {
+  const compact = size === "compact";
   return (
     <article
       className={cn(
@@ -34,7 +37,7 @@ export function ProductCard({ product, priority = false, className }: ProductCar
         className="flex flex-1 flex-col rounded-2xl outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
       >
         {/* Mobile 4:3 so wide packshots (carton + strip) show larger; square from md. */}
-        <div className="relative aspect-[4/3] bg-brand-tint md:aspect-square">
+        <div className={cn("relative aspect-[4/3] bg-brand-tint", !compact && "md:aspect-square")}>
           {product.image ? (
             <Image
               src={product.image.src}
@@ -59,11 +62,17 @@ export function ProductCard({ product, priority = false, className }: ProductCar
           )}
           <h3 className="font-heading text-base leading-snug font-semibold text-foreground">{product.name}</h3>
           {/* Mobile: shortened at a word boundary (CSS clamping can cut mid-word). Desktop: full text, 3 lines. */}
-          <p title={product.composition} className="line-clamp-2 text-sm text-muted-foreground md:line-clamp-3">
-            <span className="md:hidden">{truncateWords(product.composition, 34)}</span>
-            <span className="hidden md:inline">{product.composition}</span>
-          </p>
-          {product.packSize && <p className="mt-auto pt-1 text-xs text-muted-foreground">{product.packSize}</p>}
+          {compact ? (
+            <p title={product.composition} className="line-clamp-2 text-sm text-muted-foreground">
+              {product.composition}
+            </p>
+          ) : (
+            <p title={product.composition} className="line-clamp-2 text-sm text-muted-foreground md:line-clamp-3">
+              <span className="md:hidden">{truncateWords(product.composition, 34)}</span>
+              <span className="hidden md:inline">{product.composition}</span>
+            </p>
+          )}
+          {!compact && product.packSize && <p className="mt-auto pt-1 text-xs text-muted-foreground">{product.packSize}</p>}
         </div>
       </Link>
 

@@ -3,10 +3,56 @@ import { defineQuery } from "next-sanity";
 /** Site-wide settings (singleton). Contact details, WhatsApp number, social links for SEO. */
 export const SITE_SETTINGS_QUERY = defineQuery(`
   *[_type == "siteSettings" && _id == "siteSettings"][0]{
+    companyName,
+    tagline,
     phone,
     email,
+    address,
+    businessHours,
+    cin,
     disclaimer,
-    "socialLinks": socialLinks[].url
+    distributorCtaText,
+    "socialLinks": socialLinks[]{ platform, url }
+  }
+`);
+
+/** About page singleton (all fields optional; the page falls back to src/content/about.ts). */
+export const ABOUT_PAGE_QUERY = defineQuery(`
+  *[_type == "aboutPage" && _id == "aboutPage"][0]{
+    eyebrow,
+    heading,
+    intro,
+    storyHeading,
+    storyParagraphs,
+    "storyImage": select(defined(storyImage.asset) => storyImage{ asset, hotspot, crop, alt }),
+    mission,
+    vision,
+    valuesHeading,
+    values[]{ icon, title, text },
+    leaders[defined(name)]{
+      _key,
+      name,
+      role,
+      bio,
+      "photo": select(defined(photo.asset) => photo{ asset, hotspot, crop, alt })
+    },
+    incorporatedOn
+  }
+`);
+
+/** About page facts: real counts only. */
+export const ABOUT_STATS_QUERY = defineQuery(`{
+  "areaCount": count(*[_type == "therapeuticArea" && count(*[_type == "product" && references(^._id)]) > 0]),
+  "productCount": count(*[_type == "product"]),
+  "forms": array::unique(*[_type == "product" && defined(dosageForm)].dosageForm)
+}`);
+
+/** Footer: specialities that have at least one product. */
+export const FOOTER_AREAS_QUERY = defineQuery(`
+  *[_type == "therapeuticArea" && defined(slug.current) && count(*[_type == "product" && references(^._id)]) > 0]
+  | order(coalesce(order, 999) asc, title asc){
+    title,
+    "slug": slug.current
   }
 `);
 
@@ -115,6 +161,14 @@ export const AREA_BY_SLUG_QUERY = defineQuery(`
 /* -------------------------------------------------------------------------- */
 
 /** Home "Featured products": up to 8 featured products with their therapeutic area (for the tabs). */
+/** About page products strip: featured first, then the rest (max 8). */
+export const SHOWCASE_PRODUCTS_QUERY = defineQuery(`
+  *[_type == "product" && defined(slug.current)]
+  | order(coalesce(isFeatured, false) desc, coalesce(order, 999) asc, name asc)[0...8]{
+    ${PRODUCT_CARD_FIELDS}
+  }
+`);
+
 export const FEATURED_PRODUCTS_QUERY = defineQuery(`
   *[_type == "product" && isFeatured == true && defined(slug.current)]
   | order(coalesce(order, 999) asc, name asc)[0...8]{

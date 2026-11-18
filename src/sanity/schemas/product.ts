@@ -1,19 +1,9 @@
 import { Package as PackageIcon } from "lucide-react";
 import { defineArrayMember, defineField, defineType } from "sanity";
 
-export const DOSAGE_FORMS = [
-  "Tablet",
-  "Capsule",
-  "Syrup",
-  "Injection",
-  "Suspension",
-  "Ointment/Cream",
-  "Drops",
-  "Sachet/Powder",
-  "Softgel",
-] as const;
+import { DOSAGE_FORMS } from "../dosage-forms";
 
-export type DosageForm = (typeof DOSAGE_FORMS)[number];
+export { DOSAGE_FORMS, type DosageForm } from "../dosage-forms";
 
 /** Image with required alt text. Reused for gallery and hero images. */
 const altField = defineField({

@@ -1,0 +1,28 @@
+import type { LucideIcon } from "lucide-react";
+
+import { cn } from "@/lib/utils";
+
+type FeatureCardProps = {
+  icon: LucideIcon;
+  title: string;
+  text: string;
+  className?: string;
+};
+
+/** White card with an icon, title and one line (About values, home "Why Genoine"). */
+export function FeatureCard({ icon: Icon, title, text, className }: FeatureCardProps) {
+  return (
+    <div
+      className={cn(
+        "h-full rounded-3xl border bg-card p-6 transition-shadow duration-300 hover:shadow-[0_18px_40px_-18px_rgba(34,18,27,0.2)]",
+        className,
+      )}
+    >
+      <span className="flex size-12 items-center justify-center rounded-full bg-brand-tint text-primary" aria-hidden="true">
+        <Icon className="size-6" />
+      </span>
+      <h3 className="mt-5 font-heading text-lg font-semibold text-foreground">{title}</h3>
+      <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{text}</p>
+    </div>
+  );
+}

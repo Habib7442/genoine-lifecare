@@ -260,6 +260,10 @@ Dataset: `production`, public read. Every field description in Studio should be 
 
 Fixed `_id: "siteSettings"`, opened from the Studio sidebar (`src/sanity/structure.ts`); can't be created, duplicated or deleted. Fields: `companyName`, `tagline`, `phone`, `email`, `address`, `businessHours`, `mapEmbedUrl`, `socialLinks[] { platform, url }`, `cin`, `disclaimer`. Read it on the server with `getSiteSettings()` (`src/sanity/lib/site-settings.ts`). The WhatsApp number is **not** here (env only).
 
+### `aboutPage` (singleton)
+
+Fixed `_id: "aboutPage"`, opened from the Studio sidebar under Site settings. Every text field is optional and falls back to `src/content/about.ts`. `leaders[]` (photo with alt, name, role, bio) hides the Leadership section when empty. `incorporatedOn` falls back to `INCORPORATED_ON` in `src/lib/company.ts` (with `REGISTRAR`). Read with `getAboutPage()` / `getAboutStats()` (`src/sanity/lib/about.ts`); the fact strip uses only real counts and hides zeros. Shared page pieces: `PageHeader` (`components/layout/`), `FeatureCard`, `DistributorCta` and `FadeIn` (`components/shared/`).
+
 ### Seed data
 
 `pnpm seed` (`scripts/seed.mjs`) creates base content with fixed `_id`s: Site settings (no contact details), therapeutic areas (with icons from `public/specialities/`), and categories. It never overwrites existing documents; `pnpm seed --force` resets them. `pnpm seed:clean` (`scripts/seed-clean.mjs`) deletes leftover sample product documents and unreferenced images. **It does not create products**: the sample products were deleted once the first real product (Biostone) was added. Real products are entered in Studio, using only facts printed on the pack.
@@ -302,7 +306,7 @@ Leave out the parentheses part when dosage form and pack size are both empty.
 
 Do not add other API routes without approval.
 
-Pages: `/`, `/products`, `/products/[slug]`, `/about`, `/distributor`, `/contact`, `/studio`. Plus `sitemap.xml` and `robots.txt` through the Next.js metadata file conventions. Do not invent other routes.
+Pages: `/`, `/products`, `/products/[slug]`, `/about`, `/distributor`, `/contact`, `/studio`, and the legal placeholders `/privacy-policy`, `/terms`, `/disclaimer` (`noindex`, not in the sitemap, until the client approves the text). Plus `sitemap.xml` and `robots.txt` through the Next.js metadata file conventions. Do not invent other routes.
 
 ---
 

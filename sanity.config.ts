@@ -13,7 +13,7 @@ import { schemaTypes } from "./src/sanity/schemas";
 import { structure } from "./src/sanity/structure";
 
 /** Singleton types: one fixed document, opened from the sidebar. */
-const SINGLETON_TYPES = new Set(["siteSettings"]);
+const SINGLETON_TYPES = new Set(["siteSettings", "aboutPage"]);
 /** Actions allowed on singletons (no duplicate, delete or unpublish). */
 const SINGLETON_ACTIONS = new Set(["publish", "discardChanges", "restore"]);
 

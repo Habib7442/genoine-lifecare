@@ -107,6 +107,14 @@ export const siteSettings = defineType({
       group: "legal",
       description: "Shown in the footer and on product pages. Keep it plain and factual.",
     }),
+    defineField({
+      name: "distributorCtaText",
+      title: "“Become a distributor” banner text",
+      type: "string",
+      group: "company",
+      description: "One line under “Become a distributor”. Leave empty for: “Distributor and stockist enquiries are welcome across the Northeast.”",
+      validation: (rule) => rule.max(140),
+    }),
   ],
   preview: { prepare: () => ({ title: "Site settings" }) },
 });

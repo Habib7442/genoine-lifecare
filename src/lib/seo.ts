@@ -26,7 +26,7 @@ export const siteConfig = {
     "pharmaceutical company Assam",
     "pharma company Northeast India",
     "pharma distributor Assam",
-    "PCD pharma franchise Assam",
+    "pharma stockist Assam",
     "tablets capsules syrups manufacturer",
     "Genoine Lifecare",
   ],
@@ -144,13 +144,13 @@ export const pageMetadata = {
   about: buildMetadata({
     title: "About us",
     description:
-      "Genoine Lifecare Private Limited is a pharmaceutical marketing company in Assam, India, focused on quality medicines for doctors, chemists and distributors.",
+      "Learn about Genoine Lifecare, a pharmaceutical company in Assam focused on quality medicines across key therapeutic areas.",
     path: "/about",
   }),
   distributor: buildMetadata({
     title: "Become a distributor",
     description:
-      "Partner with Genoine Lifecare. Distributor, stockist and PCD franchise enquiries for our range of quality medicines across Assam and Northeast India.",
+      "Partner with Genoine Lifecare. Distributor and stockist enquiries for our range of quality medicines across Assam and Northeast India.",
     path: "/distributor",
   }),
   contact: buildMetadata({

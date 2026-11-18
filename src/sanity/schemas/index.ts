@@ -1,5 +1,6 @@
 import type { SchemaTypeDefinition } from "sanity";
 
+import { aboutPage } from "./about-page";
 import { category } from "./category";
 import { product } from "./product";
 import { siteSettings } from "./site-settings";
@@ -10,4 +11,5 @@ export const schemaTypes: SchemaTypeDefinition[] = [
   category,
   therapeuticArea,
   siteSettings,
+  aboutPage,
 ];

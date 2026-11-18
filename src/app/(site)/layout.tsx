@@ -1,3 +1,4 @@
+import { SiteFooter } from "@/components/layout/site-footer";
 import { WhatsAppFloat } from "@/components/layout/whatsapp-float";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { Toaster } from "@/components/ui/sonner";
@@ -20,12 +21,7 @@ export default async function SiteLayout({ children }: LayoutProps<"/">) {
 
       <main className="flex-1">{children}</main>
 
-      {/* TODO: replace with <SiteFooter /> from @/components/layout */}
-      <footer className="border-t bg-brand-tint">
-        <div className="mx-auto max-w-6xl px-4 py-8 text-sm text-muted-foreground">
-          © Genoine Lifecare Private Limited
-        </div>
-      </footer>
+      <SiteFooter settings={settings} />
 
       <WhatsAppFloat />
       <Toaster />
