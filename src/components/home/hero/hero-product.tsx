@@ -27,9 +27,13 @@ export function HeroProductImage({ product, float, eager, animateSwap, className
       <div className="relative size-full">
         {/* Shadow under the bottle: 60% of its width. Tall enough that blur-2xl doesn't wash it out;
             a little stronger on mobile, where it sits on open sky instead of clouds. */}
-        <div className="absolute inset-x-[20%] -bottom-[7%] h-[13%] lg:-bottom-[10%] lg:h-[20%]" aria-hidden="true">
+        <div
+          className="absolute inset-x-[22.5%] -bottom-[6%] h-[10%] md:inset-x-[20%] md:-bottom-[7%] md:h-[13%] lg:-bottom-[10%] lg:h-[20%]"
+          aria-hidden="true"
+        >
+          {/* Mobile: 55% wide, softer (blur-xl); md+: the original cloud-bed shadow */}
           <motion.div
-            className="size-full rounded-[50%] bg-hero-shadow/35 blur-2xl md:bg-hero-shadow/25"
+            className="size-full rounded-[50%] bg-hero-shadow/20 blur-xl md:bg-hero-shadow/25 md:blur-2xl"
             animate={float ? { scale: [1, 0.82, 1], opacity: [1, 0.55, 1] } : { scale: 1, opacity: 1 }}
             transition={float ? FLOAT : undefined}
           />

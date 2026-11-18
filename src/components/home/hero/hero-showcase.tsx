@@ -6,17 +6,20 @@ import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useRef, useState, type ReactNode } from "react";
 
-
 import { WhatsAppIcon } from "@/components/icons/whatsapp-icon";
 
 import { HeroBubbles } from "./hero-bubbles";
 import { HERO_HEADLINE } from "./hero-content";
 import { HeroProductImage } from "./hero-product";
+import { HeroProductCard } from "./hero-product-card";
 import { HeroSwitcher } from "./hero-switcher";
 import { HeroTrustPanel } from "./hero-trust-panel";
 import { EASE_OUT, HERO_TIMING } from "./motion";
 import { SwapIn } from "./swap-in";
 import type { HeroShowcaseItem } from "./types";
+
+/** Below this, a small count reads as a weakness: show "Explore the range" instead. */
+const MIN_COUNT_TO_SHOW = 3;
 
 type HeroShowcaseProps = {
   products: HeroShowcaseItem[];
@@ -107,14 +110,9 @@ export function HeroShowcase({ products, header, background, contactHref }: Hero
               ))}
             </h1>
 
-            {/* Mobile: trust pill right under the headline (desktop shows it bottom-left) */}
-            <motion.div className="relative z-10 order-2 px-5 md:hidden" {...panelIn(0)}>
-              <HeroTrustPanel compact />
-            </motion.div>
-
             <div className="relative z-10 order-4 px-5 md:px-10 lg:mt-6 lg:min-h-[92px] lg:max-w-[300px] lg:px-0 xl:max-w-[360px]">
-              {/* Mobile: subtle glass card so the text stays readable over the sky and clouds */}
-              <div className="max-md:rounded-2xl max-md:border max-md:border-white/30 max-md:bg-slate-900/25 max-md:p-4 max-md:backdrop-blur-md">
+              {/* Mobile: solid white card (same style as the desktop product card) */}
+              <div className="max-md:rounded-2xl max-md:border max-md:border-white max-md:bg-white/90 max-md:p-4 max-md:shadow-[0_20px_40px_-12px_rgba(30,58,95,0.25)] max-md:backdrop-blur-md max-md:text-shadow-none">
                 {/* The active bottle's speciality (static design content + product count from Sanity) */}
                 <SwapIn key={product.id} animate={hasSwitched} className="flex items-center gap-3">
                   <Image
@@ -126,12 +124,20 @@ export function HeroShowcase({ products, header, background, contactHref }: Hero
                     className="size-12 shrink-0 object-contain drop-shadow-[0_6px_10px_rgba(0,0,0,0.18)]"
                   />
                   <div className="flex min-w-0 flex-col gap-0.5">
-                    <p className="font-heading text-lg leading-snug font-semibold text-white xl:text-xl">{product.title}</p>
-                    <p className="text-sm leading-snug text-white/90">{product.line}</p>
-                    {product.productCount > 0 && (
-                      <p className="mt-0.5 text-xs tracking-wide text-white/85 uppercase">
-                        Explore {product.productCount} {product.productCount === 1 ? "product" : "products"}
+                    <p className="font-heading text-lg leading-snug font-semibold text-white max-md:text-foreground xl:text-xl">{product.title}</p>
+                    <p className="text-sm leading-snug text-white/90 max-md:text-foreground/70">{product.line}</p>
+                    {product.productCount >= MIN_COUNT_TO_SHOW ? (
+                      <p className="mt-0.5 text-xs tracking-wide text-white/85 uppercase max-md:font-medium max-md:text-primary">
+                        Explore {product.productCount} products
                       </p>
+                    ) : (
+                      <Link
+                        href={`/products?area=${encodeURIComponent(product.areaSlug)}`}
+                        className="mt-0.5 inline-flex w-fit items-center gap-1 rounded-sm text-xs font-medium tracking-wide text-white/90 uppercase outline-none hover:text-white hover:underline focus-visible:ring-2 focus-visible:ring-white max-md:text-primary max-md:hover:text-brand-primary-light max-md:focus-visible:ring-ring"
+                      >
+                        Explore the range
+                        <ArrowRight className="size-3.5" aria-hidden="true" />
+                      </Link>
                     )}
                   </div>
                 </SwapIn>
@@ -173,14 +179,20 @@ export function HeroShowcase({ products, header, background, contactHref }: Hero
                 float={!reduceMotion}
                 eager={activeIndex === 0}
                 animateSwap={hasSwitched}
-                className="aspect-[3/4] w-[min(64vw,300px)] lg:h-full lg:w-auto"
+                className="aspect-[3/4] w-[38vw] md:w-[min(64vw,300px)] lg:h-full lg:w-auto"
               />
             </motion.div>
           </div>
 
-          {/* Thumbnails: after the bottle on mobile, bottom-right on desktop */}
+          {/* Mobile: small centred trust pill below the buttons, above the thumbnails (desktop: bottom-left) */}
+          <motion.div className="relative z-10 order-6 flex justify-center px-5 md:hidden" {...panelIn(1)}>
+            <HeroTrustPanel compact />
+          </motion.div>
+
+          {/* Thumbnails: a row after the bottle on mobile; a slim vertical rail on the right from lg,
+              centred at 44% so it ends well inside the top 75% (clear of the WhatsApp bubble) */}
           <motion.div
-            className="relative z-10 order-6 px-5 pb-5 md:px-10 md:pb-0 lg:absolute lg:right-10 lg:bottom-6 lg:px-0"
+            className="relative z-10 order-7 px-5 pb-5 md:px-10 md:pb-0 lg:absolute lg:top-[44%] lg:right-8 lg:-translate-y-1/2 lg:px-0"
             {...panelIn(2)}
           >
             <HeroSwitcher
@@ -194,9 +206,18 @@ export function HeroShowcase({ products, header, background, contactHref }: Hero
             />
           </motion.div>
 
+          {/* Real product from the active speciality: between the bottle and the rail, slightly above centre.
+              xl+ only: below 1280px it would overlap the bottle. */}
+          <motion.div
+            className="absolute top-[44%] right-[136px] z-10 hidden -translate-y-1/2 xl:block 2xl:right-[168px]"
+            {...panelIn(3)}
+          >
+            <HeroProductCard item={product} animateSwap={hasSwitched} />
+          </motion.div>
+
           {/* Trust pill: bottom-left from md (mobile shows the compact one under the headline) */}
           <motion.div
-            className="relative z-10 order-7 hidden px-10 pb-5 md:block lg:absolute lg:bottom-6 lg:left-10 lg:px-0 lg:pb-0"
+            className="relative z-10 order-8 hidden px-10 pb-5 md:block lg:absolute lg:bottom-6 lg:left-10 lg:px-0 lg:pb-0"
             {...panelIn(0)}
           >
             <HeroTrustPanel />

@@ -179,9 +179,18 @@ export const FEATURED_PRODUCTS_QUERY = defineQuery(`
 `);
 
 /** Product counts for the hero's speciality bottles (by therapeutic area slug). */
-export const AREA_PRODUCT_COUNTS_QUERY = defineQuery(`
+export const HERO_AREAS_QUERY = defineQuery(`
   *[_type == "therapeuticArea" && slug.current in $slugs]{
     "slug": slug.current,
-    "count": count(*[_type == "product" && references(^._id)])
+    "count": count(*[_type == "product" && references(^._id)]),
+    "product": *[_type == "product" && references(^._id) && defined(slug.current)]
+      | order(coalesce(isFeatured, false) desc, coalesce(order, 999) asc, name asc)[0]{
+        name,
+        "slug": slug.current,
+        dosageForm,
+        packSize,
+        "image": images[0]{ asset, alt },
+        "heroImage": heroImage{ asset, alt }
+      }
   }
 `);

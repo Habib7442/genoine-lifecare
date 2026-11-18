@@ -145,6 +145,7 @@
   --animate-hero-drift: hero-drift 30s ease-in-out infinite alternate;
   --animate-hero-bubble: hero-bubble 9s ease-in-out infinite;
   --animate-hero-progress: hero-progress 6s linear forwards;
+  --animate-hero-progress-y: hero-progress-y 6s linear forwards;
   --animate-icon-bob: icon-bob 4s ease-in-out infinite;
 
   @keyframes icon-bob {
@@ -173,6 +174,15 @@
     }
     50% {
       transform: translate(6px, -14px);
+    }
+  }
+
+  @keyframes hero-progress-y {
+    from {
+      transform: scaleY(0);
+    }
+    to {
+      transform: scaleY(1);
     }
   }
 
@@ -210,15 +220,15 @@
   }
 }
 
-/* Product pages have their own WhatsApp buttons (inline + mobile sticky bar): no floating bubble there. */
-body:has([data-product-page]) [data-whatsapp-float] {
-  display: none;
-}
-
-/* Mobile sticky WhatsApp bar is showing (set by ProductEnquiryCta): keep the footer clear of it. */
+/* Mobile sticky WhatsApp bar is showing (set by ProductEnquiryCta): keep the footer clear of it,
+   and lift the floating bubble (always visible, every page) above the bar. */
 @media (width < 48rem) {
   body[data-sticky-bar="on"] {
     padding-bottom: calc(4.75rem + env(safe-area-inset-bottom));
+  }
+
+  body[data-sticky-bar="on"] [data-whatsapp-float] {
+    bottom: calc(5.75rem + env(safe-area-inset-bottom));
   }
 }
 

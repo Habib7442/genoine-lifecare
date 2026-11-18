@@ -1,12 +1,14 @@
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 
-import { SpecialityTile } from "@/components/home/specialities/speciality-tile";
+import { SpecialityGrid } from "@/components/home/specialities/speciality-grid";
+import { SwipeHint } from "@/components/home/specialities/swipe-hint";
 import type { SpecialityArea } from "@/components/home/specialities/types";
 import { ProductCard } from "@/components/product/product-card";
 import type { ProductCardData } from "@/components/product/types";
 import { FadeIn } from "@/components/shared/fade-in";
-import { cn } from "@/lib/utils";
+
+const GRID_ID = "about-specialities";
 
 /** Desktop columns: as many as there are areas, up to 3. */
 const DESKTOP_COLS = ["lg:grid-cols-1", "lg:grid-cols-2", "lg:grid-cols-3"];
@@ -36,32 +38,23 @@ export function AboutRange({ areas, forms, products }: AboutRangeProps) {
   return (
     <section aria-labelledby="range-heading" className="pt-12 md:pt-24">
       <div className="mx-auto w-full max-w-7xl px-5 md:px-10">
-        <FadeIn>
-          <p className="text-xs font-semibold tracking-widest text-primary uppercase">Our range</p>
-          <h2
-            id="range-heading"
-            className="mt-2 font-heading text-[28px] leading-tight font-semibold text-foreground md:text-[40px]"
-          >
-            What we offer
-          </h2>
+        <FadeIn className="flex items-end justify-between gap-4">
+          <div>
+            <p className="text-xs font-semibold tracking-widest text-primary uppercase">Our range</p>
+            <h2
+              id="range-heading"
+              className="mt-2 font-heading text-[28px] leading-tight font-semibold text-foreground md:text-[40px]"
+            >
+              What we offer
+            </h2>
+          </div>
+          {areas.length > 4 && <SwipeHint targetId={GRID_ID} className="mb-2" />}
         </FadeIn>
 
         {areas.length > 0 && (
-          <FadeIn className="mt-8 md:mt-10">
-            <ul
-              aria-label="Therapeutic areas"
-              className={cn(
-                "grid gap-4 md:grid-cols-2 md:gap-5",
-                DESKTOP_COLS[Math.min(areas.length, 3) - 1],
-              )}
-            >
-              {areas.map((area, index) => (
-                <li key={area.id}>
-                  <SpecialityTile area={area} index={index} className="h-full" />
-                </li>
-              ))}
-            </ul>
-          </FadeIn>
+          <div className="mt-8 md:mt-10">
+            <SpecialityGrid id={GRID_ID} areas={areas} desktopCols={DESKTOP_COLS[Math.min(areas.length, 3) - 1]} />
+          </div>
         )}
 
         {products.length > 0 && (

@@ -3,6 +3,9 @@ import Link from "next/link";
 
 import { getSpecialityAreas } from "./get-speciality-areas";
 import { SpecialityGrid } from "./speciality-grid";
+import { SwipeHint } from "./swipe-hint";
+
+const GRID_ID = "home-specialities";
 
 /** Home: "Browse by therapeutic area", directly under the hero. */
 export async function SpecialitiesSection() {
@@ -22,15 +25,19 @@ export async function SpecialitiesSection() {
             </h2>
             <p className="mt-2 text-muted-foreground">Explore our range across key therapeutic areas.</p>
           </div>
-          <Link
-            href="/products"
-            className="inline-flex shrink-0 items-center gap-1.5 rounded-sm text-sm font-medium text-primary outline-none hover:text-brand-primary-light focus-visible:ring-2 focus-visible:ring-ring"
-          >
-            View all products <ArrowRight className="size-4" aria-hidden="true" />
-          </Link>
+          <div className="flex items-center justify-between gap-4">
+            <Link
+              href="/products"
+              className="inline-flex shrink-0 items-center gap-1.5 rounded-sm text-sm font-medium text-primary outline-none hover:text-brand-primary-light focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              View all products <ArrowRight className="size-4" aria-hidden="true" />
+            </Link>
+            {/* 2 rows × ~2 visible columns: only worth a hint when more than 4 tiles */}
+            {areas.length > 4 && <SwipeHint targetId={GRID_ID} />}
+          </div>
         </div>
 
-        <SpecialityGrid areas={areas} />
+        <SpecialityGrid id={GRID_ID} areas={areas} />
       </div>
     </section>
   );

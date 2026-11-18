@@ -15,7 +15,10 @@ type SpecialityTileProps = {
   className?: string;
 };
 
-/** Compact horizontal tile: icon box, title + description, arrow. Used on Home and About. */
+/**
+ * Mobile: small vertical card (icon, title, description; the whole tile is the link).
+ * md+: compact horizontal row (icon box, text, arrow). Used on Home and About.
+ */
 export function SpecialityTile({ area, index, className }: SpecialityTileProps) {
   const background = area.tint ?? `var(${TINT_VARS[index % TINT_VARS.length]})`;
   const count =
@@ -31,39 +34,40 @@ export function SpecialityTile({ area, index, className }: SpecialityTileProps) 
       aria-label={[area.title, area.description, count].filter(Boolean).join(": ")}
       style={{ backgroundColor: background }}
       className={cn(
-        "group flex min-h-[140px] items-center gap-4 rounded-3xl p-5",
+        "group flex flex-col items-start gap-3 rounded-2xl p-4",
+        "md:min-h-[140px] md:flex-row md:items-center md:gap-4 md:rounded-3xl md:p-5",
         "transition-shadow duration-300 outline-none hover:shadow-[0_18px_40px_-18px_rgba(34,18,27,0.25)]",
         "focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
         className,
       )}
     >
       {area.iconSrc && (
-        // 88px box on small phones so the text keeps room; 104px from sm.
+        // Mobile: bare 56px icon. md+: 88px icon in a 104px white/60 box.
         <span
           aria-hidden="true"
-          className="flex size-[88px] shrink-0 items-center justify-center rounded-2xl bg-white/60 transition-transform duration-300 ease-out motion-safe:group-hover:scale-105 motion-safe:group-hover:rotate-3 sm:size-[104px]"
+          className="flex size-14 shrink-0 items-center justify-center transition-transform duration-300 ease-out motion-safe:group-hover:scale-105 motion-safe:group-hover:rotate-3 md:size-[104px] md:rounded-2xl md:bg-white/60"
         >
           <Image
             src={area.iconSrc}
             alt=""
             width={88}
             height={88}
-            sizes="(min-width: 640px) 88px, 72px"
-            className="size-[72px] object-contain drop-shadow-[0_8px_12px_rgba(142,27,94,0.18)] sm:size-[88px]"
+            sizes="(min-width: 768px) 88px, 56px"
+            className="size-14 object-contain drop-shadow-[0_8px_12px_rgba(142,27,94,0.18)] md:size-[88px]"
           />
         </span>
       )}
 
-      <div className="min-w-0 flex-1">
-        <h3 className="truncate font-heading text-xl font-semibold text-foreground">{area.title}</h3>
+      <div className="w-full min-w-0 md:flex-1">
+        <h3 className="truncate font-heading text-base font-semibold text-foreground md:text-xl">{area.title}</h3>
         {area.description && (
-          <p className="mt-1 line-clamp-2 text-sm leading-snug text-foreground/60">{area.description}</p>
+          <p className="mt-1 line-clamp-2 text-xs leading-snug text-foreground/60 md:text-sm">{area.description}</p>
         )}
       </div>
 
       <span
         aria-hidden="true"
-        className="flex size-10 shrink-0 items-center justify-center rounded-full bg-white text-primary shadow-sm transition-colors duration-300 group-hover:bg-primary group-hover:text-primary-foreground"
+        className="hidden size-10 shrink-0 items-center justify-center rounded-full bg-white text-primary shadow-sm transition-colors duration-300 group-hover:bg-primary group-hover:text-primary-foreground md:flex"
       >
         <ArrowRight className="size-4" />
       </span>
