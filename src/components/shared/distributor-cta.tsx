@@ -8,6 +8,7 @@ import { getSiteSettings } from "@/sanity/lib/site-settings";
 
 /** Banner photo behind the block (public/banners). */
 const BANNER = "/banners/distributor.webp";
+const BANNER_MOBILE = "/banners/distributor-mobile.webp";
 
 const FALLBACK_TEXT = "Distributor and stockist enquiries are welcome across the Northeast.";
 
@@ -19,18 +20,28 @@ export async function DistributorCta() {
   return (
     <section aria-labelledby="distributor-cta-heading" className="py-12 md:py-24">
       <div className="mx-auto w-full max-w-7xl px-5 md:px-10">
-        <div className="relative overflow-hidden rounded-[32px] bg-primary px-6 py-10 text-center text-primary-foreground md:px-12 md:py-16">
-          {/* Banner photo, deepened to the brand magenta with a multiply layer (stronger on mobile,
-              where the crop shows the boxes on the left behind the text). */}
+        <div className="relative overflow-hidden rounded-[32px] bg-primary px-6 pt-10 pb-16 text-center text-primary-foreground md:px-12 md:py-16">
           <div aria-hidden="true">
+            {/* Mobile: portrait image, cartons in the bottom-left corner below the buttons; a top-down
+                magenta fade keeps the text area clean and lets the boxes show faintly at the bottom. */}
+            <Image
+              src={BANNER_MOBILE}
+              alt=""
+              fill
+              sizes="100vw"
+              className="origin-bottom-left scale-125 object-cover object-[0%_100%] md:hidden"
+            />
+            <div className="absolute inset-0 bg-linear-to-b from-primary/95 via-primary/85 via-60% to-primary/40 md:hidden" />
+
+            {/* md+: wide image deepened to the brand magenta with a multiply layer. */}
             <Image
               src={BANNER}
               alt=""
               fill
               sizes="(min-width: 1280px) 1200px, 100vw"
-              className="object-cover object-left md:object-center"
+              className="hidden object-cover object-center md:block"
             />
-            <div className="absolute inset-0 bg-primary/55 mix-blend-multiply md:bg-primary/45" />
+            <div className="absolute inset-0 hidden bg-primary/45 mix-blend-multiply md:block" />
           </div>
 
           <h2 id="distributor-cta-heading" className="relative z-10 font-heading text-[28px] leading-tight font-semibold md:text-[40px]">
