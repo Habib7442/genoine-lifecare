@@ -12,6 +12,8 @@ export type SiteSettings = {
   phone?: string;
   /** Always set: Studio value, else CONTACT_EMAIL. */
   email: string;
+  /** Email exactly as set in Studio (no fallback), for places that show only Studio data. */
+  studioEmail?: string;
   address?: string;
   businessHours?: string;
   /** Address or "lat, lng" for the Contact page map. */
@@ -58,6 +60,7 @@ export async function getSiteSettings(): Promise<SiteSettings> {
     tagline: result?.tagline || undefined,
     phone: result?.phone || undefined,
     email: result?.email || CONTACT_EMAIL,
+    studioEmail: result?.email || undefined,
     address: result?.address || undefined,
     businessHours: result?.businessHours || undefined,
     mapQuery: result?.mapQuery?.trim() || undefined,

@@ -16,8 +16,9 @@ import { getSiteSettings } from "@/sanity/lib/site-settings";
 
 export const metadata = pageMetadata.distributor;
 
-/** Drop this file in to switch the header to the banner style (like Contact). */
-const BANNER = "/banners/distributor.webp";
+/** Drop this file in to switch the header to the banner style (like Contact).
+    (Not distributor.webp: that magenta image is the "Become a distributor" CTA background.) */
+const BANNER = "/banners/distributor-header.webp";
 const hasBanner = existsSync(path.join(process.cwd(), "public", BANNER));
 
 const LINK_CLASS =
@@ -42,7 +43,7 @@ export default async function DistributorPage() {
         title="Become a distributor"
         intro="Distributor and stockist enquiries are welcome across the Northeast. Share your details and our team will get in touch."
         {...(hasBanner
-          ? { background: { desktop: BANNER, mobile: "/banners/distributor-mobile.webp" } }
+          ? { background: { desktop: BANNER, mobile: "/banners/distributor-header-mobile.webp" } }
           : { aside: <AboutHeaderVisual /> })}
       />
 
