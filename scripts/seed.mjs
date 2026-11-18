@@ -36,7 +36,7 @@ const AREAS = [
   { slug: "paediatric", title: "Paediatric", short: "Care for infants and children", desc: "Our range for children's health.", tint: "#FFF6D6" },
   { slug: "respiratory", title: "Respiratory", short: "Cough, cold and breathing", desc: "Our range for respiratory care.", tint: "#F3EEF8" },
   { slug: "nutraceuticals", title: "Nutraceuticals", short: "Vitamins and daily wellness", desc: "Our range for everyday wellness.", tint: "#EEF7F3" },
-  { slug: "urology", title: "Urology" },
+  { slug: "urology", title: "Urology", short: "Kidney and urinary tract care", desc: "Our range for urology." },
 ];
 
 const CATEGORIES = [

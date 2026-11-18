@@ -44,6 +44,7 @@ const FALLBACK_DESCRIPTIONS: Record<string, string> = {
   paediatric: "Care for infants and children",
   respiratory: "Cough, cold and breathing",
   nutraceuticals: "Vitamins and daily wellness",
+  urology: "Kidney and urinary tract care",
 };
 
 /** Local 3D icon for a slug, if one has been added to /public/specialities. */
