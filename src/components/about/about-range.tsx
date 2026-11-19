@@ -1,6 +1,7 @@
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 
+import { AllProductsTile } from "@/components/home/specialities/all-products-tile";
 import { SpecialityGrid } from "@/components/home/specialities/speciality-grid";
 import { SwipeHint } from "@/components/home/specialities/swipe-hint";
 import type { SpecialityArea } from "@/components/home/specialities/types";
@@ -10,8 +11,8 @@ import { FadeIn } from "@/components/shared/fade-in";
 
 const GRID_ID = "about-specialities";
 
-/** Desktop columns: as many as there are areas, up to 3. */
-const DESKTOP_COLS = ["lg:grid-cols-1", "lg:grid-cols-2", "lg:grid-cols-3"];
+/** Desktop columns: one per tile (areas + "All products") up to 4, else rows of 3. */
+const DESKTOP_COLS = ["lg:grid-cols-1", "lg:grid-cols-2", "lg:grid-cols-3", "lg:grid-cols-4"];
 
 /** Chip labels for the dosage forms in the product schema. */
 const FORM_LABELS: Record<string, string> = {
@@ -48,12 +49,18 @@ export function AboutRange({ areas, forms, products }: AboutRangeProps) {
               What we offer
             </h2>
           </div>
-          {areas.length > 4 && <SwipeHint targetId={GRID_ID} className="mb-2" />}
+          {areas.length + 1 > 4 && <SwipeHint targetId={GRID_ID} className="mb-2" />}
         </FadeIn>
 
         {areas.length > 0 && (
           <div className="mt-8 md:mt-10">
-            <SpecialityGrid id={GRID_ID} areas={areas} desktopCols={DESKTOP_COLS[Math.min(areas.length, 3) - 1]} />
+            <SpecialityGrid
+              id={GRID_ID}
+              areas={areas}
+              trailing={<AllProductsTile className="h-full" />}
+              // Up to 4 tiles fit one row; more wrap in rows of 3.
+              desktopCols={DESKTOP_COLS[(areas.length + 1 <= 4 ? areas.length + 1 : 3) - 1]}
+            />
           </div>
         )}
 

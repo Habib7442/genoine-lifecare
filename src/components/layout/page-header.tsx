@@ -34,7 +34,7 @@ function publicFileExists(file: string): boolean {
 function HeaderBackground({ desktop, mobile }: { desktop: string; mobile?: string }) {
   const hasMobile = Boolean(mobile && publicFileExists(mobile));
   return (
-    <div aria-hidden="true">
+    <div aria-hidden="true" className="absolute inset-0">
       {hasMobile && mobile && (
         <Image
           src={mobile}

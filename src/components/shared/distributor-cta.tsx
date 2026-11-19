@@ -21,7 +21,7 @@ export async function DistributorCta() {
     <section aria-labelledby="distributor-cta-heading" className="py-12 md:py-24">
       <div className="mx-auto w-full max-w-7xl px-5 md:px-10">
         <div className="relative overflow-hidden rounded-[32px] bg-primary px-6 pt-10 pb-16 text-center text-primary-foreground md:px-12 md:py-16">
-          <div aria-hidden="true">
+          <div aria-hidden="true" className="absolute inset-0">
             {/* Mobile: portrait image, cartons in the bottom-left corner below the buttons; a top-down
                 magenta fade keeps the text area clean and lets the boxes show faintly at the bottom. */}
             <Image

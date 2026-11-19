@@ -109,7 +109,7 @@ Check:
 ## 8. Optional / decide later
 
 - **Analytics:** not built yet. The simplest option is **Vercel Web Analytics** (Vercel → Analytics → Enable, plus a small `@vercel/analytics` component). Ask before adding it: it's a new dependency, and a privacy policy should mention it.
-- **Google Business Profile** for the Karimganj office (helps local search; uses the same address and phone).
+- **Google Business Profile** for the Sribhumi office (helps local search; uses the same address and phone).
 - **Logo:** a simplified "GL" mark for the favicon and header.
 - **Legal pages:** once the client approves the text, remove `noIndex` from `/privacy-policy`, `/terms` and `/disclaimer`.
 

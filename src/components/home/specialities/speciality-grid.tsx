@@ -1,6 +1,7 @@
 "use client";
 
 import { MotionConfig, motion } from "motion/react";
+import type { ReactNode } from "react";
 
 import { cn } from "@/lib/utils";
 
@@ -13,6 +14,8 @@ type SpecialityGridProps = {
   id?: string;
   /** Desktop column class (default 3 columns). */
   desktopCols?: string;
+  /** Optional last tile (e.g. "All products"), animated like the others. */
+  trailing?: ReactNode;
 };
 
 /**
@@ -20,7 +23,7 @@ type SpecialityGridProps = {
  * Tablet: 2 columns. Desktop: 3 columns (3×3 for 9 areas).
  * Tiles fade up in a stagger as they scroll into view.
  */
-export function SpecialityGrid({ areas, id, desktopCols = "lg:grid-cols-3" }: SpecialityGridProps) {
+export function SpecialityGrid({ areas, id, desktopCols = "lg:grid-cols-3", trailing }: SpecialityGridProps) {
   return (
     // "user": the slide-up is skipped when the OS asks for reduced motion.
     <MotionConfig reducedMotion="user">
@@ -46,6 +49,17 @@ export function SpecialityGrid({ areas, id, desktopCols = "lg:grid-cols-3" }: Sp
             <SpecialityTile area={area} index={index} className="h-full" />
           </motion.li>
         ))}
+        {trailing && (
+          <motion.li
+            className="h-full snap-start"
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.2 }}
+            transition={{ duration: 0.5, delay: (areas.length % 4) * 0.08, ease: [0.22, 1, 0.36, 1] }}
+          >
+            {trailing}
+          </motion.li>
+        )}
       </ul>
     </MotionConfig>
   );

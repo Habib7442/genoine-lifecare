@@ -13,7 +13,7 @@ export const ABOUT_FALLBACK = {
     "Genoine Lifecare is a pharmaceutical company based in Assam, bringing quality medicines to doctors, chemists and distributors across the region.",
   storyHeading: "Our story",
   storyParagraphs: [
-    "Founded in 2026 in Karimganj, Assam, Genoine Lifecare was started with a simple aim: to make reliable, quality medicines easily available across the Northeast.",
+    "Founded in 2026 in Sribhumi, Assam, Genoine Lifecare was started with a simple aim: to make reliable, quality medicines easily available across the Northeast.",
     "We work with certified manufacturing partners and focus on key therapeutic areas, so healthcare professionals can trust every product that carries our name.",
   ],
   storyImage: {

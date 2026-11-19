@@ -4,7 +4,7 @@
 export const CONTACT_EMAIL = "support@genoinelifecare.com";
 
 /** Shown as the location when Site settings has no address. */
-export const FALLBACK_ADDRESS = "Karimganj, Assam, India";
+export const FALLBACK_ADDRESS = "Sribhumi, Assam, India";
 
 /** Registrar of Companies for the CIN. */
 export const REGISTRAR = "ROC Guwahati";

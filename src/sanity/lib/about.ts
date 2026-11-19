@@ -12,6 +12,10 @@ export type AboutLeader = {
   name: string;
   role: string;
   bio?: string;
+  /** Public profile (https only). */
+  profileUrl?: string;
+  /** Shown first, in the large highlighted card. */
+  isFounder: boolean;
   photo?: { src: string; alt: string };
 };
 
@@ -61,6 +65,8 @@ type AboutPageResult = {
     name: string;
     role?: string | null;
     bio?: string | null;
+    profileUrl?: string | null;
+    isFounder?: boolean | null;
     photo?: SanityImage | null;
   }[] | null;
   incorporatedOn?: string | null;
@@ -111,6 +117,8 @@ export async function getAboutPage(): Promise<AboutPage> {
               name: leader.name,
               role: leader.role,
               bio: leader.bio || undefined,
+              profileUrl: leader.profileUrl?.startsWith("https://") ? leader.profileUrl : undefined,
+              isFounder: leader.isFounder === true,
               photo: leader.photo?.asset
                 ? {
                     src: urlFor(leader.photo).width(640).height(640).fit("crop").auto("format").url(),
@@ -120,7 +128,9 @@ export async function getAboutPage(): Promise<AboutPage> {
             },
           ]
         : [],
-    ),
+    )
+      // Founders first; otherwise keep the Studio order (sort is stable).
+      .sort((a, b) => Number(b.isFounder) - Number(a.isFounder)),
     incorporatedOn: result?.incorporatedOn || INCORPORATED_ON,
   };
 }

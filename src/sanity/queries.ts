@@ -35,6 +35,8 @@ export const ABOUT_PAGE_QUERY = defineQuery(`
       name,
       role,
       bio,
+      profileUrl,
+      isFounder,
       "photo": select(defined(photo.asset) => photo{ asset, hotspot, crop, alt })
     },
     incorporatedOn
